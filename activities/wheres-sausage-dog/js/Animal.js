@@ -14,7 +14,9 @@ class Animal {
     display(){
         push();
         imageMode(CENTER);
-        image(this.img, this.x, this.y)
+        translate(this.x, this.y);
+        rotate(this.angle);
+        image(this.img, 0, 0)
         pop();
     }
 

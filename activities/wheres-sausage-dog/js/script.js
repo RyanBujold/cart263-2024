@@ -1,15 +1,14 @@
 /**
- * Title of Project
- * Author Name
+ * Where is the sausage dog?
+ * Ryan Bujold
  * 
- * This is a template. You must fill in the title, author, 
- * and this description to match your project!
+ * TODO description
  */
 
 "use strict";
 
 /**
- * Description of preload
+ * Load the files
 */
 function preload() {
 
@@ -17,7 +16,7 @@ function preload() {
 
 
 /**
- * Description of setup
+ * Setup the files
 */
 function setup() {
 
@@ -25,7 +24,7 @@ function setup() {
 
 
 /**
- * Description of draw()
+ * Display the program on the canvas
 */
 function draw() {
 

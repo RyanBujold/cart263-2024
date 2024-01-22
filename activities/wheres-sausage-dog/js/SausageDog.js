@@ -20,7 +20,7 @@ class SausageDog extends Animal{
     }
 
     mousePressed(){
-        if(mouseX > this.x - this.img.width/2 && mouseX < this.x + this.img.width/2 && mouseY > this.y - this.img.height/2 && mouseY < this.y + this.img.height/2){
+        if(super.overlap(mouseX,mouseY)){
             this.found = true;
         }
     }

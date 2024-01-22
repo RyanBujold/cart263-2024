@@ -20,4 +20,8 @@ class Animal {
         pop();
     }
 
+    overlap(x,y){
+        return x > this.x - this.img.width/2 && x < this.x + this.img.width/2 && y > this.y - this.img.height/2 && y < this.y + this.img.height/2;
+    }
+
 }

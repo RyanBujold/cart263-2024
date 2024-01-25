@@ -7,8 +7,8 @@
 
 "use strict";
 
-const speechSynthesizer = p5.Speech();
-const speechRecognizer = p5.SpeechRec();
+const speechSynthesizer = new p5.Speech();
+const speechRecognizer = new p5.SpeechRec();
 
 let jsonAnimals;
 let animals;
@@ -32,14 +32,9 @@ function preload() {
 function setup() {
     animals = jsonAnimals.animals;
 
-    if(speechRecognizer != null && speechSynthesizer != null) {
-        speechRecognizer.continuous = true;
-        speechRecognizer.onResult = handleSpeechInput();
-        speechRecognizer.start();
-    }
-    else {
-        voiceValid = false;
-    }
+    speechRecognizer.continuous = true;
+    speechRecognizer.onResult = handleSpeechInput();
+    speechRecognizer.start();
 
     createCanvas(500,500);
 }
@@ -62,13 +57,7 @@ function draw() {
 function mousePressed() {
     currentAnimal = random(animals);
     let reverseAnimal = reverseString(currentAnimal);
-    if(voiceValid){
-        speechSynthesizer.speak(reverseAnimal);
-    }
-    else{
-        currentAnswer = "ERROR: p5.speech not supported in this browser";
-    }
-    
+    speechSynthesizer.speak(reverseAnimal);    
 }
 
 function handleSpeechInput() {

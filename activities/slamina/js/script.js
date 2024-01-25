@@ -7,10 +7,16 @@
 
 "use strict";
 
+const speechSynthesizer = p5.Speech();
+const speechRecognizer = p5.SpeechRec();
+
 let jsonAnimals;
 let animals;
 
 let currentAnimal;
+let currentAnswer;
+
+let voiceValid = true;
 
 /**
  * Description of preload
@@ -26,6 +32,16 @@ function preload() {
 function setup() {
     animals = jsonAnimals.animals;
 
+    if(speechRecognizer != null && speechSynthesizer != null) {
+        speechRecognizer.continuous = true;
+        speechRecognizer.onResult = handleSpeechInput();
+        speechRecognizer.start();
+    }
+    else {
+        voiceValid = false;
+    }
+
+    createCanvas(500,500);
 }
 
 
@@ -33,7 +49,39 @@ function setup() {
  * Description of draw()
 */
 function draw() {
+    if(currentAnimal == currentAnswer){
+        background(0,200,0);
+    }
+    else {
+        background(200,0,0);
+    }
 
+    text(currentAnswer,200,250);
+}
+
+function mousePressed() {
+    currentAnimal = random(animals);
+    let reverseAnimal = reverseString(currentAnimal);
+    if(voiceValid){
+        speechSynthesizer.speak(reverseAnimal);
+    }
+    else{
+        currentAnswer = "ERROR: p5.speech not supported in this browser";
+    }
+    
+}
+
+function handleSpeechInput() {
+    let guessedAnimal = "what??";
+    if(speechRecognizer.resultValue) {
+        let lowerCaseResult = speechRecognizer.resultString.toLowerCase();
+        let parts = lowerCaseResult.split(`i think it is `);
+        if(parts.length) {
+            guessedAnimal = parts[1];
+        }
+    }
+    currentAnswer = guessedAnimal;
+    console.log(currentAnswer);
 }
 
 /**

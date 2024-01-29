@@ -9,15 +9,24 @@
 
 const speechSynthesizer = new p5.Speech();
 const speechRecognizer = new p5.SpeechRec();
+const imagePath = "assets/images/";
 
 let playerAnswer = "waiting...";
 let robotSpeech = "lets play rock, paper, scissors. You go first";
+let currentFace;
+let faces;
 
 /**
  * Preload the files
 */
 function preload() {
-    
+    faces = {
+        neutral:loadImage(imagePath+"neutralFace.jpg"),
+        happy:loadImage(imagePath+"happyFace.jpg"),
+        angry:loadImage(imagePath+"angryFace.jpg"),
+        smiling:loadImage(imagePath+"smilingFace.jpg"),
+        obey:loadImage(imagePath+"obeyFace.jpg"),
+    }
 }
 
 
@@ -28,6 +37,8 @@ function setup() {
     speechRecognizer.continuous = true;
     speechRecognizer.onResult = handleSpeechInput;
     speechRecognizer.start();
+
+    currentFace = faces.neutral;
 
     createCanvas(windowWidth, windowHeight);
 
@@ -42,10 +53,16 @@ function setup() {
 function draw() {
     background(0);
 
+    push();
     // Player and robot text display
     fill(255);
     text("Robot: "+robotSpeech, width / 3, height / 3);
     text("You: "+playerAnswer, width / 3, height - height / 3);
+    // Robot image
+    imageMode(CENTER);
+    image(currentFace, width/2, height/5, 200, 200);
+
+    pop();
 }
 
 function handleSpeechInput() {
@@ -94,27 +111,34 @@ function decideRobotSpeach(wordArray) {
     // Check for greetings
     if(tracker.greetings > 0){
         speech += "hello. "
+        currentFace = faces.happy;
     }
     // Check for profanity
     if(tracker.profanity > 0){
         speech += "its only a game. why do you have to be mad? ";
+        currentFace = faces.angry;
     }
     // Check the rock paper scissors
     if(tracker.rock > 0 && tracker.paper == 0 && tracker.scissors == 0){
         speech += "paper. ";
+        currentFace = faces.smiling;
     }
     else if(tracker.paper > 0 && tracker.rock == 0 && tracker.scissors == 0){
         speech += "scissors. ";
+        currentFace = faces.smiling;
     }
     else if(tracker.scissors > 0 && tracker.rock == 0 && tracker.paper == 0){
         speech += "rock. ";
+        currentFace = faces.smiling;
     }
     else if(tracker.rock > 0 || tracker.paper > 0 || tracker.scissors > 0){
         speech += "please choose either rock, paper or scissors."
+        currentFace = faces.neutral;
     }
     // If the robot cannot decide what to say, the say this
     if(speech.length == 0){
         speech = "I didn't understand that."
+        currentFace = faces.neutral;
     }
 
     // Return the completed speech

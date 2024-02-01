@@ -7,16 +7,18 @@ class Robot {
      * @param {*} w 
      * @param {*} h 
      * @param {*} images 
+     * @param {*} words
      */
-    constructor(x,y,w,h,images){
+    constructor(x,y,w,h,images,words){
         this.x = x;
         this.y = y;
         this.width = w;
         this.height = h;
         this.faces = images;
+        this.words = words;
 
         this.currentFace = this.faces.neutral;
-        this.speech = "lets play rock, paper, scissors. You go first";
+        this.speech = "say something...";//"lets play rock, paper, scissors. You go first";
     }
 
     draw(){
@@ -46,24 +48,22 @@ class Robot {
                 case "scissors":
                     tracker.scissors++;
                     break;
-                case "hello":
-                    tracker.greetings++;
-                    break;
-                case "stupid":
-                    tracker.profanity++;
             }
+            this.words.greetings.words.forEach(word => { if(word == wordArray[i]){ tracker.greetings++; } });
+            this.words.profanity.words.forEach(word => { if(word == wordArray[i]){ tracker.profanity++; } });
+            
         }
 
         // Robot decides what to say
         let speech = "";
         // Check for greetings
         if(tracker.greetings > 0){
-            speech += "hello. "
+            speech += random(this.words.greetings.answers);
             this.currentFace = faceImages.happy;
         }
         // Check for profanity
         if(tracker.profanity > 0){
-            speech += "its only a game. why do you have to be mad? ";
+            speech += random(this.words.profanity.answers);
             this.currentFace = faceImages.angry;
         }
         // Check the rock paper scissors

@@ -10,11 +10,13 @@
 const speechSynthesizer = new p5.Speech();
 const speechRecognizer = new p5.SpeechRec();
 const imagePath = "assets/images/";
+const jsonPath = "assets/data/";
 
 let playerAnswer = "waiting...";
 
 let robot;
 let faceImages;
+let wordsJson;
 
 /**
  * Preload the files
@@ -27,6 +29,7 @@ function preload() {
         smiling:loadImage(imagePath+"smilingFace.jpg"),
         obey:loadImage(imagePath+"obeyFace.jpg"),
     }
+    wordsJson = loadJSON(jsonPath+"robotWords.JSON");
 }
 
 
@@ -38,8 +41,7 @@ function setup() {
     speechRecognizer.onResult = handleSpeechInput;
     speechRecognizer.start();
 
-    robot = new Robot(windowWidth/2,windowHeight/5,200,200,faceImages);
-    console.log(robot);
+    robot = new Robot(windowWidth/2,windowHeight/5,200,200,faceImages,wordsJson);
 
     createCanvas(windowWidth, windowHeight);
 
@@ -72,6 +74,5 @@ function handleSpeechInput() {
 
     // Get the robot to talk
     robot.decideSpeech(wordArray);
-    //robot.talk(speechSynthesizer);
     speechSynthesizer.speak(robot.speech);
 }

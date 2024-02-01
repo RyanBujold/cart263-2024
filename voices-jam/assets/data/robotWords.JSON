@@ -1,0 +1,11 @@
+{
+    "greetings": {
+        "words": ["hello","hi","greetings","hey"],
+        "answers": ["hello!", "hi!", "nice to meet you!", "greetings!","whats up!"]
+    },
+    "profanity": {
+        "words": ["stupid","idiot","dumb"],
+        "answers": ["its only a game. why do you have to be mad?","thats not very nice.","I see how it is.","theres no need to get aggressive."]
+    }
+    
+}

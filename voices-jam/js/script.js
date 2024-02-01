@@ -72,5 +72,6 @@ function handleSpeechInput() {
 
     // Get the robot to talk
     robot.decideSpeech(wordArray);
-    robot.talk(speechSynthesizer);
+    //robot.talk(speechSynthesizer);
+    speechSynthesizer.speak(robot.speech);
 }

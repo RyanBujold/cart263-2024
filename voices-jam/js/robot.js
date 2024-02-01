@@ -59,42 +59,38 @@ class Robot {
         // Check for greetings
         if(tracker.greetings > 0){
             speech += "hello. "
-            currentFace = faceImages.happy;
+            this.currentFace = faceImages.happy;
         }
         // Check for profanity
         if(tracker.profanity > 0){
             speech += "its only a game. why do you have to be mad? ";
-            currentFace = faceImages.angry;
+            this.currentFace = faceImages.angry;
         }
         // Check the rock paper scissors
         if(tracker.rock > 0 && tracker.paper == 0 && tracker.scissors == 0){
             speech += "paper. ";
-            currentFace = faceImages.smiling;
+            this.currentFace = faceImages.smiling;
         }
         else if(tracker.paper > 0 && tracker.rock == 0 && tracker.scissors == 0){
             speech += "scissors. ";
-            currentFace = faceImages.smiling;
+            this.currentFace = faceImages.smiling;
         }
         else if(tracker.scissors > 0 && tracker.rock == 0 && tracker.paper == 0){
             speech += "rock. ";
-            currentFace = faceImages.smiling;
+            this.currentFace = faceImages.smiling;
         }
         else if(tracker.rock > 0 || tracker.paper > 0 || tracker.scissors > 0){
             speech += "please choose either rock, paper or scissors."
-            currentFace = faceImages.neutral;
+            this.currentFace = faceImages.neutral;
         }
         // If the robot cannot decide what to say, the say this
         if(speech.length == 0){
             speech = "I didn't understand that."
-            currentFace = faceImages.neutral;
+            this.currentFace = faceImages.neutral;
         }
 
         // Save the completed speech
         this.speech = speech;      
-    }
-
-    talk(speechSynthesizer){
-        speechSynthesizer.speak(this.speech);
     }
 
 }

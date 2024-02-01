@@ -12,15 +12,15 @@ const speechRecognizer = new p5.SpeechRec();
 const imagePath = "assets/images/";
 
 let playerAnswer = "waiting...";
-let robotSpeech = "lets play rock, paper, scissors. You go first";
-let currentFace;
-let faces;
+
+let robot;
+let faceImages;
 
 /**
  * Preload the files
 */
 function preload() {
-    faces = {
+    faceImages = {
         neutral:loadImage(imagePath+"neutralFace.jpg"),
         happy:loadImage(imagePath+"happyFace.jpg"),
         angry:loadImage(imagePath+"angryFace.jpg"),
@@ -38,7 +38,8 @@ function setup() {
     speechRecognizer.onResult = handleSpeechInput;
     speechRecognizer.start();
 
-    currentFace = faces.neutral;
+    robot = new Robot(windowWidth/2,windowHeight/5,200,200,faceImages);
+    console.log(robot);
 
     createCanvas(windowWidth, windowHeight);
 
@@ -53,16 +54,12 @@ function setup() {
 function draw() {
     background(0);
 
-    push();
     // Player and robot text display
     fill(255);
-    text("Robot: "+robotSpeech, width / 3, height / 3);
+    text("Robot: "+robot.speech, width / 3, height / 3);
     text("You: "+playerAnswer, width / 3, height - height / 3);
     // Robot image
-    imageMode(CENTER);
-    image(currentFace, width/2, height/5, 200, 200);
-
-    pop();
+    robot.draw();
 }
 
 function handleSpeechInput() {
@@ -74,73 +71,6 @@ function handleSpeechInput() {
     let wordArray = lowerCaseText.split(` `);
 
     // Get the robot to talk
-    robotSpeech = decideRobotSpeach(wordArray);
-    speechSynthesizer.speak(robotSpeech);
-}
-
-function decideRobotSpeach(wordArray) {
-     // Keep track of the number of times each type of key word is uttered
-     let tracker = {
-        rock:0,
-        paper:0,
-        scissors:0,
-        greetings:0,
-        profanity:0,
-    }
-    for(let i = 0; i < wordArray.length; i++){
-        switch(wordArray[i]){
-            case "rock":
-                tracker.rock++;
-                break;
-            case "paper":
-                tracker.paper++;
-                break;
-            case "scissors":
-                tracker.scissors++;
-                break;
-            case "hello":
-                tracker.greetings++;
-                break;
-            case "stupid":
-                tracker.profanity++;
-        }
-    }
-
-    // Robot decides what to say
-    let speech = "";
-    // Check for greetings
-    if(tracker.greetings > 0){
-        speech += "hello. "
-        currentFace = faces.happy;
-    }
-    // Check for profanity
-    if(tracker.profanity > 0){
-        speech += "its only a game. why do you have to be mad? ";
-        currentFace = faces.angry;
-    }
-    // Check the rock paper scissors
-    if(tracker.rock > 0 && tracker.paper == 0 && tracker.scissors == 0){
-        speech += "paper. ";
-        currentFace = faces.smiling;
-    }
-    else if(tracker.paper > 0 && tracker.rock == 0 && tracker.scissors == 0){
-        speech += "scissors. ";
-        currentFace = faces.smiling;
-    }
-    else if(tracker.scissors > 0 && tracker.rock == 0 && tracker.paper == 0){
-        speech += "rock. ";
-        currentFace = faces.smiling;
-    }
-    else if(tracker.rock > 0 || tracker.paper > 0 || tracker.scissors > 0){
-        speech += "please choose either rock, paper or scissors."
-        currentFace = faces.neutral;
-    }
-    // If the robot cannot decide what to say, the say this
-    if(speech.length == 0){
-        speech = "I didn't understand that."
-        currentFace = faces.neutral;
-    }
-
-    // Return the completed speech
-    return speech;
+    robot.decideSpeech(wordArray);
+    robot.talk(speechSynthesizer);
 }

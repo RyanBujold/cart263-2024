@@ -61,7 +61,7 @@ function draw() {
     text("Robot: "+robot.speech, width / 3, height / 3);
     text("You: "+playerAnswer, width / 3, height - height / 3);
     // Robot image
-    robot.draw();
+    robot.update();
 }
 
 function handleSpeechInput() {

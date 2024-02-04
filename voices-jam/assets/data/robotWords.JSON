@@ -1,31 +1,43 @@
 {
     "greetings": {
         "words": ["hello","hi","greetings","hey"],
-        "answers": ["hello!", "hi!", "nice to meet you!", "greetings!","whats up!"]
+        "answers": ["hello! ", "hi! ", "nice to meet you! ", "greetings! ","whats up! "]
     },
     "profanity": {
-        "words": ["stupid","idiot","dumb"],
-        "answers": ["its only a game. why do you have to be mad?","thats not very nice.","I see how it is.","theres no need to get aggressive."]
+        "words": ["stupid","idiot","dumb","shut up","cheater","rigged"],
+        "answers": ["its only a game. why do you have to be mad? ","thats not very nice. ","I see how it is. ","theres no need to get aggressive. "]
     },
     "question": {
         "words": ["who","what","what's","how"],
         "answers": {
             "who": {
-                "you": "I am your virtual robot assistant. wanna play rock, paper, scissors?"
+                "you": "I am your virtual robot assistant. wanna play rock, paper, scissors? "
             },
             "what": {
-                "name": "my name is robot. you can call me rob.",
-                "game": "we are playing rock, paper, scissors. you go first."
+                "name": "my name is robot. you can call me rob. ",
+                "game": "we are playing rock, paper, scissors. you go first. ",
+                "do": "just say either rock, paper or scissors to play. "
             },
             "what's": {
-                "name": "my name is robot. you can call me rob.",
-                "game": "we are playing rock, paper, scissors. you go first."
+                "name": "my name is robot. you can call me rob. ",
+                "game": "we are playing rock, paper, scissors. you go first. "
             },
             "how": {
-                "play": "just say either rock, paper or scissors to play.",
-                "you": "doing good."
+                "play": "just say either rock, paper or scissors to play. ",
+                "you": "doing good. "
             }
         }
-    }
+    },
+    "outcome": {
+        "win": ["I win. "],
+        "lose": ["You win. "],
+        "draw": ["Its a draw. ","Draw game. "]
+    },
+    "comments":{
+        "good": ["I'm having so much fun! ", "Today is a good day! ", "You are so nice to me! ", "I love rock paper scissors! ", "Wow! ","Yay! "],
+        "bad": ["This is not fun. Not fun at all! ", "I'm not sure if I like you. ", "You know, in the end its all just a game. Right? "]
+    },
+    "misunderstanding": ["I didn't understand that. ","I'm not sure I understand what you are saying. ","I'm not programmed to know what you just said. "],
+    "default": "Please choose either rock, paper or scissors. "
     
 }

@@ -111,7 +111,7 @@ class Robot {
                 playerChoice = "scissors";
             }
             else if(tracker.rock > 0 || tracker.paper > 0 || tracker.scissors > 0){
-                speech += "please choose either rock, paper or scissors."
+                speech += "please choose either rock, paper or scissors. "
             }
 
             // Play rock paper scissors

@@ -18,6 +18,8 @@ let robot;
 let faceImages;
 let wordsJson;
 
+let currentState = "title";
+
 /**
  * Preload the files
 */
@@ -37,16 +39,15 @@ function preload() {
  * Setup the canvas before looping draw
 */
 function setup() {
+    speechSynthesizer.setPitch(1.2);
+
     speechRecognizer.continuous = true;
     speechRecognizer.onResult = handleSpeechInput;
-    speechRecognizer.start();
 
     robot = new Robot(windowWidth/2,windowHeight/5,200,200,faceImages,wordsJson);
 
     createCanvas(windowWidth, windowHeight);
 
-    //console.log(speechSynthesizer.listVoices());
-    //speechSynthesizer.setVoice(``);
 }
 
 
@@ -56,12 +57,57 @@ function setup() {
 function draw() {
     background(0);
 
+    switch(currentState){
+        case "title":
+            titleState();
+            break;
+        case "game":
+            gameState();
+            break;
+        default:
+            console.log("ERROR: something went wrong!");
+            break;
+    }
+}
+
+function titleState(){
+    // Display the title
+    fill(150,0,0);
+    textSize(100);
+    text("OBEY", width / 3, 400);
+    fill(255);
+    textSize(50);
+    text("press enter to start", width / 3, 500);
+}
+
+function gameState(){
     // Player and robot text display
     fill(255);
-    text("Robot: "+robot.speech, width / 3, height / 3);
-    text("You: "+playerAnswer, width / 3, height - height / 3);
+    textSize(30);
+    text("Robot: "+robot.speech, width / 3 - robot.speech.length*2, height / 3);
+    text("You: "+playerAnswer, width / 3 - playerAnswer.length*2, height - height / 3);
     // Robot image
     robot.update();
+    // Change the robot's voice if we are in obey mode
+    if(robot.obey){
+        speechSynthesizer.setVoice(`Google italiano`);
+        speechSynthesizer.setPitch(0.2);
+    }
+}
+
+function changeState(newState){
+    // Start the speech recognizer when we change to the game state
+    if(newState == "game"){
+        speechRecognizer.start();
+    }
+    currentState = newState;
+}
+
+function keyPressed() {
+    // If we press enter on the title state, change state
+    if(keyCode == ENTER && currentState == "title"){
+        changeState("game");
+    }
 }
 
 function handleSpeechInput() {

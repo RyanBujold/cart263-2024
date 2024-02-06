@@ -1,10 +1,10 @@
 {
     "greetings": {
         "words": ["hello","hi","greetings","hey"],
-        "answers": ["hello! ", "hi! ", "nice to meet you! ", "greetings! ","whats up! "]
+        "answers": ["hello! ", "hi! ", "nice to meet you! ", "greetings! "]
     },
     "profanity": {
-        "words": ["stupid","idiot","dumb","shut up","cheater","rigged"],
+        "words": ["stupid","idiot","dumb","cheater","rigged"],
         "answers": ["its only a game. why do you have to be mad? ","thats not very nice. ","I see how it is. ","theres no need to get aggressive. "]
     },
     "question": {

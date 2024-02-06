@@ -1,7 +1,7 @@
 class Robot {
 
     /**
-     * A robot.
+     * A robot that plays rock paper scissors against a human player.
      * @param {*} x 
      * @param {*} y 
      * @param {*} w 
@@ -18,7 +18,7 @@ class Robot {
         this.words = words;
 
         this.currentFace = this.faces.neutral;
-        this.speech = "say something...";//"lets play rock, paper, scissors. You go first";
+        this.speech = "say something...";
         this.mood = 0;
         this.obey = false;
     }

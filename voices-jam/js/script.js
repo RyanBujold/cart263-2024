@@ -2,7 +2,8 @@
  * Voices Jam
  * Ryan Bujold
  * 
- * A project using p5.speech
+ * A project using p5.speech. The player converses with a robot and 
+ * plays games of rock paper scissors.
  */
 
 "use strict";

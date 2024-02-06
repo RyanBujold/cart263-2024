@@ -87,6 +87,10 @@ function gameState(){
     textSize(30);
     text("Robot: "+robot.speech, width / 3 - robot.speech.length*2, height / 3);
     text("You: "+playerAnswer, width / 3 - playerAnswer.length*2, height - height / 3);
+    // Show some instructions for the player
+    fill(200);
+    textSize(20);
+    text("Help:\n- say hello\n- ask 'how to play'\n- try stuff out!\n- obey", 10, 50);
     // Robot image
     robot.update();
     // Change the robot's voice if we are in obey mode

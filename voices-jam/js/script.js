@@ -8,8 +8,8 @@
 
 "use strict";
 
-const speechSynthesizer = new p5.Speech();
-const speechRecognizer = new p5.SpeechRec();
+let speechSynthesizer;
+let speechRecognizer;
 const imagePath = "assets/images/";
 const jsonPath = "assets/data/";
 
@@ -40,15 +40,10 @@ function preload() {
  * Setup the canvas before looping draw
 */
 function setup() {
-    speechSynthesizer.setPitch(1.2);
-
-    speechRecognizer.continuous = true;
-    speechRecognizer.onResult = handleSpeechInput;
-
     robot = new Robot(windowWidth/2,windowHeight/5,200,200,faceImages,wordsJson);
 
+    
     createCanvas(windowWidth, windowHeight);
-
 }
 
 
@@ -93,16 +88,17 @@ function gameState(){
     text("Help:\n- say hello\n- ask 'how to play'\n- try stuff out!\n- obey", 10, 50);
     // Robot image
     robot.update();
-    // Change the robot's voice if we are in obey mode
-    if(robot.obey){
-        speechSynthesizer.setVoice(`Google italiano`);
-        speechSynthesizer.setPitch(0.2);
-    }
 }
 
 function changeState(newState){
     // Start the speech recognizer when we change to the game state
     if(newState == "game"){
+        speechSynthesizer = new p5.Speech();
+        speechRecognizer = new p5.SpeechRec();
+        speechSynthesizer.setPitch(1.2);
+        speechSynthesizer.setRate(1.1);
+        speechRecognizer.continuous = true;
+        speechRecognizer.onResult = handleSpeechInput;
         speechRecognizer.start();
     }
     currentState = newState;
@@ -125,5 +121,10 @@ function handleSpeechInput() {
 
     // Get the robot to talk
     robot.decideSpeech(wordArray);
+    // Change the robot's voice if we are in obey mode
+    if(robot.obey){
+        speechSynthesizer.setPitch(0.2);
+        speechSynthesizer.setRate(0.8);
+    }
     speechSynthesizer.speak(robot.speech);
 }

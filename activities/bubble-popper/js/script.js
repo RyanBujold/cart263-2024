@@ -7,6 +7,9 @@
 
 "use strict";
 
+let video;
+let handpose;
+
 /**
  * Load the files
 */
@@ -19,7 +22,9 @@ function preload() {
  * Setup the program
 */
 function setup() {
+    createCanvas(640,480);
 
+    video = createCapture(VIDEO);
 }
 
 

@@ -33,7 +33,7 @@ function setup() {
     animals = jsonAnimals.animals;
 
     speechRecognizer.continuous = true;
-    speechRecognizer.onResult = handleSpeechInput();
+    speechRecognizer.onResult = handleSpeechInput;
     speechRecognizer.start();
 
     createCanvas(500,500);

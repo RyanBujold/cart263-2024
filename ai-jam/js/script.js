@@ -7,9 +7,12 @@
 
 "use strict";
 
-let predictions = [];
-let video;
+let facePredictions = [];
+let handPredictions = [];
+let video1;
+let video2;
 let facemesh;
+let handpose;
 
 /**
  * Description of preload
@@ -25,14 +28,21 @@ function preload() {
 function setup() {
     createCanvas(800,800);
 
-    video = createCapture(VIDEO);
-    video.hide();
+    video1 = createCapture(VIDEO);
+    video1.hide();
 
-    facemesh = ml5.facemesh(video, {}, function() { console.log("model loaded!"); });
+    video2 = createCapture(VIDEO);
+    video2.hide();
+
+    facemesh = ml5.facemesh(video1, {}, function() { console.log("face model loaded!"); });
     facemesh.on(`face`, function(results) {
-        predictions = results;
+        facePredictions = results;
     });
 
+    handpose = ml5.handpose(video2, {}, function() { console.log("hand model loaded!"); })
+    handpose.on(`hand`, function(results) {
+        handPredictions = results;
+    });
 }
 
 
@@ -42,14 +52,14 @@ function setup() {
 function draw() {
     background(10);
 
-    if(predictions.length > 0){
+    if(facePredictions.length > 0){
         fill(200,0,0);
         ellipseMode(CENTER);
-        predictions[0].mesh.forEach(point => {
+        facePredictions[0].mesh.forEach(point => {
             ellipse(point[0],point[1], 5);
         });
 
-        let box = predictions[0].boundingBox.topLeft[0];
+        let box = facePredictions[0].boundingBox.topLeft[0];
         let centerP = [400 + box[0],400 + box[1]];
         push()
         fill(0,150,0);
@@ -60,6 +70,14 @@ function draw() {
         line(0,800,centerP[0],centerP[1]);
         line(800,800,centerP[0],centerP[1]);
         pop();
+    }
+
+    if(handPredictions.length > 0){
+        fill(0,0,200);
+        ellipseMode(CENTER);
+        handPredictions[0].landmarks.forEach(point => {
+            ellipse(point[0],point[1], 5);
+        });
     }
     
 }

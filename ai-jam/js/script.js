@@ -8,11 +8,8 @@
 "use strict";
 
 let facePredictions = [];
-//let handPredictions = [];
 let video1;
-//let video2;
 let facemesh;
-//let handpose;
 let faceShift = {
     x:0,
     y:0,
@@ -35,18 +32,10 @@ function setup() {
     video1 = createCapture(VIDEO);
     video1.hide();
 
-    //video2 = createCapture(VIDEO);
-    //video2.hide();
-
     facemesh = ml5.facemesh(video1, {}, function() { console.log("face model loaded!"); });
     facemesh.on(`face`, function(results) {
         facePredictions = results;
     });
-
-    // handpose = ml5.handpose(video2, {}, function() { console.log("hand model loaded!"); })
-    // handpose.on(`hand`, function(results) {
-    //     handPredictions = results;
-    // });
 }
 
 
@@ -93,8 +82,17 @@ function draw() {
         push()
         // Draw the backdrop rectangle
         stroke(0,150,0);
-        fill(0);
+        fill(150);
         rect(faceRect.x,faceRect.y,faceRect.w,faceRect.h);
+        // Draw the walls and ceiling
+        fill(100);
+        quad(0,0, windowWidth,0, faceRect.x+faceRect.w,faceRect.y, faceRect.x,faceRect.y);//Ceiling
+        fill(200);
+        quad(0,0, faceRect.x,faceRect.y, faceRect.x,faceRect.y+faceRect.h, 0,windowHeight);//Left wall
+        quad(windowWidth,0, windowWidth,windowHeight, faceRect.x+faceRect.w,faceRect.y+faceRect.h, faceRect.x+faceRect.w,faceRect.y);//Right wall
+        fill(50);
+        quad(0,windowHeight, faceRect.x,faceRect.y+faceRect.h, faceRect.x+faceRect.w,faceRect.y+faceRect.h, windowWidth,windowHeight);//Floor
+
         // Draw perspective lines to the backdrop from the corners
         line(0,0,faceRect.x,faceRect.y);
         line(windowWidth,0,faceRect.x+faceRect.w,faceRect.y);
@@ -105,13 +103,5 @@ function draw() {
         ellipse(faceCenter.x,faceCenter.y,5);
         pop();
     }
-
-    // if(handPredictions.length > 0){
-    //     fill(0,0,200);
-    //     ellipseMode(CENTER);
-    //     handPredictions[0].landmarks.forEach(point => {
-    //         ellipse(point[0],point[1], 5);
-    //     });
-    // }
     
 }

@@ -3,6 +3,9 @@
  * Ryan Bujold
  * 
  * TODO
+ * 
+ * Sources:
+ * - used for calculations https://www.omnicalculator.com/math/line-equation-from-two-points 
  */
 
 "use strict";
@@ -103,7 +106,6 @@ function running(){
         // Draw the shapes
         push()
         // Draw the backdrop rectangle
-        stroke(0,150,0);
         fill(150);
         rect(faceRect.x,faceRect.y,faceRect.w,faceRect.h);
         // Draw the walls and ceiling
@@ -115,39 +117,31 @@ function running(){
         fill(50);
         quad(0,canvasHeight, faceRect.x,faceRect.y+faceRect.h, faceRect.x+faceRect.w,faceRect.y+faceRect.h, canvasWidth,canvasHeight);//Floor
 
-        // Draw perspective lines to the backdrop from the corners
-        line(0,0,faceRect.x,faceRect.y);
-        line(canvasWidth,0,faceRect.x+faceRect.w,faceRect.y);
-        line(0,canvasHeight,faceRect.x,faceRect.y+faceRect.h);
-        line(canvasWidth,canvasHeight,faceRect.x+faceRect.w,faceRect.y+faceRect.h);
-        // Draw the center point
-        fill(0,150,0);
-        ellipse(faceCenter.x,faceCenter.y,5);
-
         // Rows ordered from back to front
         noStroke();
-        let rowShift;
-        // Row 2
-        fill(90,90,90,50);
-        rowShift = {
-            x:(faceCenter.x - canvasWidth/2) * 0.4,
-            y:(faceCenter.y - canvasHeight/2) * 0.6,
-        }
-        rect(200+rowShift.x,550+rowShift.y,150,120);
-        rect(505+rowShift.x,550+rowShift.y,270,120);
-        rect(930+rowShift.x,550+rowShift.y,150,120);
-        // Row 1
-        fill(100,100,100,50);
-        rowShift = {
-            x:(faceCenter.x - canvasWidth/2) * 0.2,
-            y:(faceCenter.y - canvasHeight/2) * 0.2,
-        }
-        rect(80+rowShift.x,600+rowShift.y,200,150);
-        rect(480+rowShift.x,600+rowShift.y,320,150);
-        rect(1000+rowShift.x,600+rowShift.y,200,150);
+        fill(80);
+        drawRow(faceCenter,500,100,220,90,0.7,0.9);
+        fill(90);
+        drawRow(faceCenter,550,150,270,120,0.4,0.7);
+        fill(100);
+        drawRow(faceCenter,600,200,320,150,0.2,0.2);
 
         pop();
     }
+}
+
+function drawRow(faceCenter,y,wside,wmiddle,h,xshift,yshift){
+    let rowShift = {
+        x:(faceCenter.x - canvasWidth/2) * xshift,
+        y:(faceCenter.y - canvasHeight/2) * yshift,
+    }
+    let x1 = (-120*y+76000)/50;
+    let x2 = (-25*y+39000)/50;
+    let x3 = (70*y+8000)/50;
+
+    rect(x1+rowShift.x,y+rowShift.y,wside,h);
+    rect(x2+rowShift.x,y+rowShift.y,wmiddle,h);
+    rect(x3+rowShift.x,y+rowShift.y,wside,h);
 }
 
 function loading(){

@@ -8,7 +8,7 @@
 "use strict";
 
 const canvasWidth = 1280;
-const canvasHeight = 854;
+const canvasHeight = 800;
 
 let state = "loading";
 let facePredictions = [];
@@ -124,9 +124,28 @@ function running(){
         fill(0,150,0);
         ellipse(faceCenter.x,faceCenter.y,5);
 
-        // ROWS
-        fill(0,150,0);
-        rect(200,canvasHeight-100,400,50);
+        // Rows ordered from back to front
+        noStroke();
+        let rowShift;
+        // Row 2
+        fill(90,90,90,50);
+        rowShift = {
+            x:(faceCenter.x - canvasWidth/2) * 0.4,
+            y:(faceCenter.y - canvasHeight/2) * 0.6,
+        }
+        rect(200+rowShift.x,550+rowShift.y,150,120);
+        rect(505+rowShift.x,550+rowShift.y,270,120);
+        rect(930+rowShift.x,550+rowShift.y,150,120);
+        // Row 1
+        fill(100,100,100,50);
+        rowShift = {
+            x:(faceCenter.x - canvasWidth/2) * 0.2,
+            y:(faceCenter.y - canvasHeight/2) * 0.2,
+        }
+        rect(80+rowShift.x,600+rowShift.y,200,150);
+        rect(480+rowShift.x,600+rowShift.y,320,150);
+        rect(1000+rowShift.x,600+rowShift.y,200,150);
+
         pop();
     }
 }

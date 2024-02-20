@@ -5,7 +5,10 @@
  * TODO
  * 
  * Sources:
+ * - employee spritesheet draw by me
  * - used for calculations https://www.omnicalculator.com/math/line-equation-from-two-points 
+ * - office ambience https://pixabay.com/sound-effects/search/office/
+ * - bell chime https://freesound.org/people/KeyKrusher/sounds/173000/
  */
 
 "use strict";

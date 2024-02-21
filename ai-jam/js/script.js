@@ -18,9 +18,11 @@ const canvasWidth = 1280;
 const canvasHeight = 800;
 const totalEmployees = 12;
 const employeesPerRow = 4;
+const maxFaceShiftHeight = 400;
 
 // Files
 let officeMusic;
+let bellSFX;
 let employeeSpritesheet;
 
 // Globals
@@ -40,6 +42,7 @@ let employees = [totalEmployees];
 function preload() {
     // Load sounds
     officeMusic = loadSound("assets/sounds/officeAmbiance.mp3");
+    bellSFX = loadSound("assets/sounds/bell.wav");
 
     // Load images
     employeeSpritesheet = loadImage("assets/images/employeeSpritesheet.png");
@@ -93,8 +96,8 @@ function running(){
 
     // Play the background music
     if(!officeMusic.isPlaying()){
-        //officeAmbiance.play();
-        //officeAmbiance.loop();
+        officeMusic.play();
+        officeMusic.loop();
     }
 
     // Perform logic if we can detect a face
@@ -113,9 +116,13 @@ function running(){
         faceCenter.x += faceShift.x;
         faceCenter.y += faceShift.y;
 
+        // Make sure we can't look over the limit
+        if(faceCenter.y < maxFaceShiftHeight){
+            faceCenter.y = maxFaceShiftHeight;
+        }
         // Create a rectangle for the backdrop
-        let rectW = canvasWidth/3 + facePredictions[0].mesh[0][2] * 5;
-        let rectH = canvasHeight/3 + facePredictions[0].mesh[0][2] * 5;
+        let rectW = canvasWidth/3;// + facePredictions[0].mesh[0][2] * 5;
+        let rectH = canvasHeight/3;// + facePredictions[0].mesh[0][2] * 5;
         let faceRect = {
             x:faceCenter.x - rectW/2,
             y:faceCenter.y - rectH/2,
@@ -146,6 +153,25 @@ function running(){
         fill(100);
         drawRow(0,faceCenter,600,200,320,150,0.2,0.2);
         pop();
+    }
+
+    
+}
+
+function mousePressed(){
+    // Return if we are still loading
+    if(state == "loading"){
+        return;
+    }
+
+    // If the mouse is pressed on the employee, enter the suprised state
+    for(let i = 0; i < employees.length; i++){
+        // Break so we only choose one employee to wake up at a time
+        if(mouseX > employees[i].x && mouseX < employees[i].x + employees[i].size && mouseY > employees[i].y && mouseY < employees[i].y + employees[i].size){
+            employees[i].wakeUp();
+            bellSFX.play();
+            break;
+        }
     }
 }
 

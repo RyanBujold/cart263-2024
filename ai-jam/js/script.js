@@ -13,9 +13,17 @@
 
 "use strict";
 
+// Global Constants
 const canvasWidth = 1280;
 const canvasHeight = 800;
+const totalEmployees = 12;
+const employeesPerRow = 4;
 
+// Files
+let officeMusic;
+let employeeSpritesheet;
+
+// Globals
 let state = "loading";
 let facePredictions = [];
 let video;
@@ -24,12 +32,17 @@ let faceShift = {
     x:0,
     y:0,
 }
+let employees = [totalEmployees];
 
 /**
  * Load the files
 */
 function preload() {
+    // Load sounds
+    officeMusic = loadSound("assets/sounds/officeAmbiance.mp3");
 
+    // Load images
+    employeeSpritesheet = loadImage("assets/images/employeeSpritesheet.png");
 }
 
 
@@ -39,6 +52,7 @@ function preload() {
 function setup() {
     createCanvas(canvasWidth,canvasHeight);
 
+    // Setup the face tracking
     video = createCapture(VIDEO);
     video.hide();
 
@@ -48,6 +62,11 @@ function setup() {
     facemesh.on(`face`, function(results) {
         facePredictions = results;
     });
+
+    // Setup the employees
+    for(let i = 0; i < totalEmployees; i++){
+        employees[i] = new Employee(employeeSpritesheet);
+    }
 }
 
 
@@ -72,16 +91,14 @@ function draw() {
 function running(){
     background(0);
 
-    if(facePredictions.length > 0){
-        // Draw a model of the face we are seeing
-        // Make sure every point is blue except the first one
-        fill(200,0,0);
-        ellipseMode(CENTER);
-        facePredictions[0].mesh.forEach(point => {
-            ellipse(point[0],point[1], 5);
-            fill(0,0,200);
-        });
+    // Play the background music
+    if(!officeMusic.isPlaying()){
+        //officeAmbiance.play();
+        //officeAmbiance.loop();
+    }
 
+    // Perform logic if we can detect a face
+    if(facePredictions.length > 0){
         // Find the center of the face
         let box = facePredictions[0].boundingBox;
         let faceCenter = {
@@ -109,6 +126,7 @@ function running(){
         // Draw the shapes
         push()
         // Draw the backdrop rectangle
+        noStroke();
         fill(150);
         rect(faceRect.x,faceRect.y,faceRect.w,faceRect.h);
         // Draw the walls and ceiling
@@ -121,19 +139,17 @@ function running(){
         quad(0,canvasHeight, faceRect.x,faceRect.y+faceRect.h, faceRect.x+faceRect.w,faceRect.y+faceRect.h, canvasWidth,canvasHeight);//Floor
 
         // Rows ordered from back to front
-        noStroke();
         fill(80);
-        drawRow(faceCenter,500,100,220,90,0.7,0.9);
+        drawRow(2,faceCenter,500,100,220,90,0.7,0.9);
         fill(90);
-        drawRow(faceCenter,550,150,270,120,0.4,0.7);
+        drawRow(1,faceCenter,550,150,270,120,0.4,0.7);
         fill(100);
-        drawRow(faceCenter,600,200,320,150,0.2,0.2);
-
+        drawRow(0,faceCenter,600,200,320,150,0.2,0.2);
         pop();
     }
 }
 
-function drawRow(faceCenter,y,wside,wmiddle,h,xshift,yshift){
+function drawRow(rownum,faceCenter,y,wside,wmiddle,h,xshift,yshift){
     let rowShift = {
         x:(faceCenter.x - canvasWidth/2) * xshift,
         y:(faceCenter.y - canvasHeight/2) * yshift,
@@ -142,9 +158,25 @@ function drawRow(faceCenter,y,wside,wmiddle,h,xshift,yshift){
     let x2 = (-25*y+39000)/50;
     let x3 = (70*y+8000)/50;
 
-    rect(x1+rowShift.x,y+rowShift.y,wside,h);
-    rect(x2+rowShift.x,y+rowShift.y,wmiddle,h);
-    rect(x3+rowShift.x,y+rowShift.y,wside,h);
+    x1 = x1+rowShift.x;
+    x2 = x2+rowShift.x;
+    x3 = x3+rowShift.x;
+    let rowy = y+rowShift.y;
+
+    // Draw the rows
+    rect(x1,rowy,wside,h);
+    rect(x2,rowy,wmiddle,h);
+    rect(x3,rowy,wside,h);
+
+    // Update each of the employees positions in the row
+    let index = rownum * employeesPerRow;
+    let size = 200 - (rownum*50);
+    let mspacing = 125 + (rownum*5);
+    let empy = rowy-size;
+    employees[index].update(x1,empy,size);
+    employees[index+1].update(x2,empy,size);
+    employees[index+2].update(x2+mspacing,empy,size);
+    employees[index+3].update(x3,empy,size);
 }
 
 function loading(){

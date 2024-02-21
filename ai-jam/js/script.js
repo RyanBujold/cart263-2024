@@ -1,8 +1,8 @@
 /**
- * AI Jam
+ * AI Jam - The Crunch
  * Ryan Bujold
  * 
- * TODO
+ * A simulation using the face tracker to create a 3d environment.
  * 
  * Sources:
  * - employee spritesheet draw by me

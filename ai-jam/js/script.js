@@ -14,11 +14,17 @@
 "use strict";
 
 // Global Constants
-const canvasWidth = 1280;
-const canvasHeight = 800;
-const totalEmployees = 12;
-const employeesPerRow = 4;
-const maxFaceShiftHeight = 400;
+const CANVAS_WIDTH = 1280;
+const CANVAS_HEIGHT = 800;
+const TOTAL_EMPLOYEES = 12;
+const EMPLOYEES_PER_ROW = 4;
+const MAX_FACE_SHIFT_HEIGHT = 400;
+const MIN_FACE_SHIFT_HEIGHT = 600;
+const STATES = {
+    LOADING: "loading",
+    READY: "ready",
+    RUNNING: "running",
+}
 
 // Files
 let officeMusic;
@@ -26,7 +32,7 @@ let bellSFX;
 let employeeSpritesheet;
 
 // Globals
-let state = "loading";
+let state = STATES.LOADING;
 let facePredictions = [];
 let video;
 let facemesh;
@@ -34,7 +40,7 @@ let faceShift = {
     x:0,
     y:0,
 }
-let employees = [totalEmployees];
+let employees = [TOTAL_EMPLOYEES];
 
 /**
  * Load the files
@@ -53,21 +59,21 @@ function preload() {
  * Setup before draw
 */
 function setup() {
-    createCanvas(canvasWidth,canvasHeight);
+    createCanvas(CANVAS_WIDTH,CANVAS_HEIGHT);
 
     // Setup the face tracking
     video = createCapture(VIDEO);
     video.hide();
 
     facemesh = ml5.facemesh(video, {}, function() { 
-        state = "running"; 
+        state = STATES.READY;
     });
     facemesh.on(`face`, function(results) {
         facePredictions = results;
     });
 
     // Setup the employees
-    for(let i = 0; i < totalEmployees; i++){
+    for(let i = 0; i < TOTAL_EMPLOYEES; i++){
         employees[i] = new Employee(employeeSpritesheet);
     }
 }
@@ -79,11 +85,14 @@ function setup() {
 function draw() {
     // Run the appropriate running state
     switch(state){
-        case "running":
+        case STATES.RUNNING:
             running();
             break;
-        case "loading":
+        case STATES.LOADING:
             loading();
+            break;
+        case STATES.READY:
+            title();
             break;
         default:
             console.log("ERROR: state variable not set correctly.");
@@ -110,19 +119,19 @@ function running(){
         };
         // Calibrate the center point to the center of the canvas
         if(faceShift.x == 0 || faceShift.y == 0){
-            faceShift.x = canvasWidth/2 - faceCenter.x;
-            faceShift.y = canvasHeight/2 - faceCenter.y;
+            faceShift.x = CANVAS_WIDTH/2 - faceCenter.x;
+            faceShift.y = CANVAS_HEIGHT/2 - faceCenter.y;
         }
         faceCenter.x += faceShift.x;
         faceCenter.y += faceShift.y;
 
         // Make sure we can't look over the limit
-        if(faceCenter.y < maxFaceShiftHeight){
-            faceCenter.y = maxFaceShiftHeight;
+        if(faceCenter.y < MAX_FACE_SHIFT_HEIGHT){
+            faceCenter.y = MAX_FACE_SHIFT_HEIGHT;
         }
         // Create a rectangle for the backdrop
-        let rectW = canvasWidth/3;// + facePredictions[0].mesh[0][2] * 5;
-        let rectH = canvasHeight/3;// + facePredictions[0].mesh[0][2] * 5;
+        let rectW = CANVAS_WIDTH/3;// + facePredictions[0].mesh[0][2] * 5;
+        let rectH = CANVAS_HEIGHT/3;// + facePredictions[0].mesh[0][2] * 5;
         let faceRect = {
             x:faceCenter.x - rectW/2,
             y:faceCenter.y - rectH/2,
@@ -138,12 +147,12 @@ function running(){
         rect(faceRect.x,faceRect.y,faceRect.w,faceRect.h);
         // Draw the walls and ceiling
         fill(100);
-        quad(0,0, canvasWidth,0, faceRect.x+faceRect.w,faceRect.y, faceRect.x,faceRect.y);//Ceiling
+        quad(0,0, CANVAS_WIDTH,0, faceRect.x+faceRect.w,faceRect.y, faceRect.x,faceRect.y);//Ceiling
         fill(200);
-        quad(0,0, faceRect.x,faceRect.y, faceRect.x,faceRect.y+faceRect.h, 0,canvasHeight);//Left wall
-        quad(canvasWidth,0, canvasWidth,canvasHeight, faceRect.x+faceRect.w,faceRect.y+faceRect.h, faceRect.x+faceRect.w,faceRect.y);//Right wall
+        quad(0,0, faceRect.x,faceRect.y, faceRect.x,faceRect.y+faceRect.h, 0,CANVAS_HEIGHT);//Left wall
+        quad(CANVAS_WIDTH,0, CANVAS_WIDTH,CANVAS_HEIGHT, faceRect.x+faceRect.w,faceRect.y+faceRect.h, faceRect.x+faceRect.w,faceRect.y);//Right wall
         fill(50);
-        quad(0,canvasHeight, faceRect.x,faceRect.y+faceRect.h, faceRect.x+faceRect.w,faceRect.y+faceRect.h, canvasWidth,canvasHeight);//Floor
+        quad(0,CANVAS_HEIGHT, faceRect.x,faceRect.y+faceRect.h, faceRect.x+faceRect.w,faceRect.y+faceRect.h, CANVAS_WIDTH,CANVAS_HEIGHT);//Floor
 
         // Rows ordered from back to front
         fill(80);
@@ -159,8 +168,8 @@ function running(){
 }
 
 function mousePressed(){
-    // Return if we are still loading
-    if(state == "loading"){
+    // Return if we are not in the running state
+    if(state != STATES.RUNNING){
         return;
     }
 
@@ -175,10 +184,22 @@ function mousePressed(){
     }
 }
 
+function keyPressed(){
+    // Return if we are not in the title state
+    if(state != STATES.READY){
+        return;
+    }
+
+    // If we press enter, change state
+    if(keyCode === ENTER){
+        state = STATES.RUNNING;
+    }
+}
+
 function drawRow(rownum,faceCenter,y,wside,wmiddle,h,xshift,yshift){
     let rowShift = {
-        x:(faceCenter.x - canvasWidth/2) * xshift,
-        y:(faceCenter.y - canvasHeight/2) * yshift,
+        x:(faceCenter.x - CANVAS_WIDTH/2) * xshift,
+        y:(faceCenter.y - CANVAS_HEIGHT/2) * yshift,
     }
     let x1 = (-120*y+76000)/50;
     let x2 = (-25*y+39000)/50;
@@ -195,7 +216,7 @@ function drawRow(rownum,faceCenter,y,wside,wmiddle,h,xshift,yshift){
     rect(x3,rowy,wside,h);
 
     // Update each of the employees positions in the row
-    let index = rownum * employeesPerRow;
+    let index = rownum * EMPLOYEES_PER_ROW;
     let size = 200 - (rownum*50);
     let mspacing = 125 + (rownum*5);
     let empy = rowy-size;
@@ -211,6 +232,34 @@ function loading(){
     push();
     fill(255);
     textSize(50);
-    text("loading...",canvasWidth/2 - 100,canvasHeight/2);
+    text("loading...",CANVAS_WIDTH/2 - 100,CANVAS_HEIGHT/2);
+    fill(200);
+    textSize(30);
+    text("*start with your face in the center of your camera to ease calibration*",CANVAS_WIDTH/2 - 450, CANVAS_HEIGHT/2 + 100)
+    pop();
+}
+
+function title(){
+    background(100);
+    // Draw the user's face 
+    if(facePredictions.length > 0){
+        const faceScale = 5;
+        push();
+        fill(0,200,0);
+        noStroke();
+        ellipseMode(CENTER);
+        facePredictions[0].mesh.forEach(point => {
+            ellipse((point[0]*faceScale)+200,(point[1]*faceScale)-100, 5);
+        });
+        pop();
+    }
+    // Draw the title screen
+    push();
+    stroke(10);
+    fill(255);
+    textSize(50);
+    text("The Crunch",CANVAS_WIDTH/2 - 150,CANVAS_HEIGHT/2);
+    textSize(40);
+    text("press enter to continue",CANVAS_WIDTH/2 - 100,CANVAS_HEIGHT/2 + 30);
     pop();
 }

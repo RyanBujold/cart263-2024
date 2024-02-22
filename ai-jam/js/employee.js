@@ -1,5 +1,5 @@
-const spriteSize = 1080;
-const supriseTotalTime = 30;
+const SPRITE_SIZE = 1080;
+const SUPRISE_TOTAL_TIME = 30;
 
 class Employee {
 
@@ -37,13 +37,13 @@ class Employee {
     }
 
     wakeUp(){
-        this.supriseCounter = supriseTotalTime;
+        this.supriseCounter = SUPRISE_TOTAL_TIME;
         this.state = 2;
     }
 
     draw(){
         // Draw the current frame
-        image(this.spritesheet,this.x,this.y,this.size,this.size,this.state*spriteSize,0,spriteSize,spriteSize);
+        image(this.spritesheet,this.x,this.y,this.size,this.size,this.state*SPRITE_SIZE,0,SPRITE_SIZE,SPRITE_SIZE);
     }
 
 }

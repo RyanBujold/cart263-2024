@@ -25,6 +25,8 @@ const STATES = {
     READY: "ready",
     RUNNING: "running",
 }
+const PROFIT_LOSS = 100;
+const PROFIT_GAIN_PER_WORK = 10;
 
 // Files
 let officeMusic;
@@ -41,6 +43,12 @@ let faceShift = {
     y:0,
 }
 let employees = [TOTAL_EMPLOYEES];
+let currentProfit = 0;
+let graphValues = [currentProfit,currentProfit,currentProfit,currentProfit];
+let profitTimer = {
+    count:0,
+    limit:30,
+}
 
 /**
  * Load the files
@@ -164,7 +172,33 @@ function running(){
         pop();
     }
 
-    
+    // Calculate profit
+    if(profitTimer.count == profitTimer.limit){
+        let numWorking = 0;
+        employees.forEach(emp => {
+            if(emp.state == 0){
+                numWorking ++;
+            }
+        });
+        currentProfit += numWorking * PROFIT_GAIN_PER_WORK;
+        currentProfit -= PROFIT_LOSS;
+        // Log the profit
+        for(let i = 0; i < graphValues.length; i++){
+            if(i+1 < graphValues.length){
+                graphValues[i] = graphValues[i+1];
+            }
+        }
+        graphValues[graphValues.length] = currentProfit;
+    }
+
+    // Draw a graph
+    drawGraph();
+
+    // Update our profit timer
+    profitTimer.count++;
+    if(profitTimer.count > profitTimer.limit){
+        profitTimer.count = 0;
+    }
 }
 
 function mousePressed(){
@@ -224,6 +258,42 @@ function drawRow(rownum,faceCenter,y,wside,wmiddle,h,xshift,yshift){
     employees[index+1].update(x2,empy,size);
     employees[index+2].update(x2+mspacing,empy,size);
     employees[index+3].update(x3,empy,size);
+}
+
+function drawGraph(){
+    const GRAPH_SIZE = 150;
+    const PADDING = 20;
+    const GRAPH = {
+        X: CANVAS_WIDTH-GRAPH_SIZE-PADDING,
+        Y: PADDING,
+        W: GRAPH_SIZE,
+        H: GRAPH_SIZE,
+    }
+    push();
+    // Draw background
+    fill(0);
+    rect(GRAPH.X,GRAPH.Y,GRAPH.W,GRAPH.H);
+    // Draw graph lines
+    stroke(0,200,0);
+    let points = [graphValues.length];
+    for(let i = 0; i < graphValues.length; i++){
+        points[i] = GRAPH.Y+GRAPH_SIZE-graphValues[i];
+        if(points[i] < GRAPH.Y){
+            points[i] = GRAPH.Y;
+        }
+        if(points[i] > GRAPH.Y+GRAPH_SIZE){
+            points[i] = GRAPH.Y+GRAPH_SIZE;
+        }
+    }
+    line(GRAPH.X,points[0], GRAPH.X+GRAPH_SIZE*1/5,points[1]);
+    line(GRAPH.X+GRAPH_SIZE*1/5,points[1], GRAPH.X+GRAPH_SIZE*2/5,points[2]);
+    line(GRAPH.X+GRAPH_SIZE*2/5,points[2], GRAPH.X+GRAPH_SIZE*3/5,points[3]);
+    line(GRAPH.X+GRAPH_SIZE*3/5,points[3], GRAPH.X+GRAPH_SIZE*4/5,points[4]);
+    // Draw current money value
+    fill(0,200,0);
+    textSize(10);
+    text("Profit:"+currentProfit+"$",GRAPH.X,GRAPH.Y+GRAPH_SIZE);
+    pop();
 }
 
 function loading(){

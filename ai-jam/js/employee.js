@@ -46,4 +46,8 @@ class Employee {
         image(this.spritesheet,this.x,this.y,this.size,this.size,this.state*SPRITE_SIZE,0,SPRITE_SIZE,SPRITE_SIZE);
     }
 
+    isAwake(){
+        return this.state != 1;
+    }
+
 }

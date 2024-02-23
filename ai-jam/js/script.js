@@ -25,8 +25,10 @@ const STATES = {
     READY: "ready",
     RUNNING: "running",
 }
-const PROFIT_LOSS = 100;
+const PROFIT_LOSS = 80;
+const STARTING_MONEY = 100;
 const PROFIT_GAIN_PER_WORK = 10;
+const GRAPH_POINT_LENGTH = 20;
 
 // Files
 let officeMusic;
@@ -42,13 +44,13 @@ let faceShift = {
     x:0,
     y:0,
 }
-let employees = [TOTAL_EMPLOYEES];
-let currentProfit = 0;
-let graphValues = [currentProfit,currentProfit,currentProfit,currentProfit];
+let employees = [];
+let graphValues = [];
 let profitTimer = {
     count:0,
     limit:30,
 }
+let money = STARTING_MONEY;
 
 /**
  * Load the files
@@ -83,6 +85,11 @@ function setup() {
     // Setup the employees
     for(let i = 0; i < TOTAL_EMPLOYEES; i++){
         employees[i] = new Employee(employeeSpritesheet);
+    }
+
+    // Initialize the graph points
+    for(let j = 0; j < GRAPH_POINT_LENGTH; j++){
+        graphValues[j] = STARTING_MONEY;
     }
 }
 
@@ -138,8 +145,8 @@ function running(){
             faceCenter.y = MAX_FACE_SHIFT_HEIGHT;
         }
         // Create a rectangle for the backdrop
-        let rectW = CANVAS_WIDTH/3;// + facePredictions[0].mesh[0][2] * 5;
-        let rectH = CANVAS_HEIGHT/3;// + facePredictions[0].mesh[0][2] * 5;
+        let rectW = CANVAS_WIDTH/3;
+        let rectH = CANVAS_HEIGHT/3;
         let faceRect = {
             x:faceCenter.x - rectW/2,
             y:faceCenter.y - rectH/2,
@@ -174,21 +181,22 @@ function running(){
 
     // Calculate profit
     if(profitTimer.count == profitTimer.limit){
+        let profit = 0;
         let numWorking = 0;
         employees.forEach(emp => {
-            if(emp.state == 0){
+            if(emp.isAwake()){
                 numWorking ++;
             }
         });
-        currentProfit += numWorking * PROFIT_GAIN_PER_WORK;
-        currentProfit -= PROFIT_LOSS;
+        profit += numWorking * PROFIT_GAIN_PER_WORK;
+        profit -= PROFIT_LOSS;
         // Log the profit
-        for(let i = 0; i < graphValues.length; i++){
-            if(i+1 < graphValues.length){
-                graphValues[i] = graphValues[i+1];
-            }
+        for(let i = 0; i < graphValues.length-1; i++){
+            graphValues[i] = graphValues[i+1];
         }
-        graphValues[graphValues.length] = currentProfit;
+        money += profit;
+        graphValues[graphValues.length-1] = money;
+        console.log(graphValues.length);
     }
 
     // Draw a graph
@@ -261,7 +269,7 @@ function drawRow(rownum,faceCenter,y,wside,wmiddle,h,xshift,yshift){
 }
 
 function drawGraph(){
-    const GRAPH_SIZE = 150;
+    const GRAPH_SIZE = 250;
     const PADDING = 20;
     const GRAPH = {
         X: CANVAS_WIDTH-GRAPH_SIZE-PADDING,
@@ -269,30 +277,43 @@ function drawGraph(){
         W: GRAPH_SIZE,
         H: GRAPH_SIZE,
     }
+    const GAIN_LOSS = graphValues[graphValues.length-1]-graphValues[graphValues.length-2];
+
     push();
     // Draw background
     fill(0);
     rect(GRAPH.X,GRAPH.Y,GRAPH.W,GRAPH.H);
+    // Decide the graph color
+    if(GAIN_LOSS >= 0){
+        stroke(0,200,0);
+        fill(0,200,0);
+    }
+    else{
+        stroke(200,0,0);
+        fill(200,0,0);
+    }
     // Draw graph lines
-    stroke(0,200,0);
     let points = [graphValues.length];
-    for(let i = 0; i < graphValues.length; i++){
-        points[i] = GRAPH.Y+GRAPH_SIZE-graphValues[i];
+    for(let i = 0; i < graphValues.length-1; i++){
+        points[i] = GRAPH.Y+GRAPH_SIZE-graphValues[i]/3;
         if(points[i] < GRAPH.Y){
-            points[i] = GRAPH.Y;
+            points[i] = GRAPH.Y+PADDING;
         }
         if(points[i] > GRAPH.Y+GRAPH_SIZE){
-            points[i] = GRAPH.Y+GRAPH_SIZE;
+            points[i] = GRAPH.Y+GRAPH_SIZE-PADDING;
         }
     }
-    line(GRAPH.X,points[0], GRAPH.X+GRAPH_SIZE*1/5,points[1]);
-    line(GRAPH.X+GRAPH_SIZE*1/5,points[1], GRAPH.X+GRAPH_SIZE*2/5,points[2]);
-    line(GRAPH.X+GRAPH_SIZE*2/5,points[2], GRAPH.X+GRAPH_SIZE*3/5,points[3]);
-    line(GRAPH.X+GRAPH_SIZE*3/5,points[3], GRAPH.X+GRAPH_SIZE*4/5,points[4]);
+    for(let j = 0; j < graphValues.length-1; j++){
+        if(j != 0){
+            line(GRAPH.X+GRAPH_SIZE*(j/(graphValues.length+1)),points[j], GRAPH.X+GRAPH_SIZE*((j+1)/(graphValues.length+1)),points[j+1]);
+        }
+        else{
+            line(GRAPH.X,points[j], GRAPH.X+GRAPH_SIZE*((j+1)/(graphValues.length+1)),points[j+1]);
+        }
+    }
     // Draw current money value
-    fill(0,200,0);
-    textSize(10);
-    text("Profit:"+currentProfit+"$",GRAPH.X,GRAPH.Y+GRAPH_SIZE);
+    textSize(20);
+    text("Money:"+graphValues[graphValues.length-1]+"$ | Gain/Loss:"+GAIN_LOSS+"$",GRAPH.X,GRAPH.Y+GRAPH_SIZE+PADDING);
     pop();
 }
 

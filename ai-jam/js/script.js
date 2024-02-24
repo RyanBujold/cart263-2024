@@ -24,6 +24,7 @@ const STATES = {
     LOADING: "loading",
     READY: "ready",
     RUNNING: "running",
+    GAMEOVER: "gameover",
 }
 const PROFIT_LOSS = 80;
 const STARTING_MONEY = 100;
@@ -109,6 +110,9 @@ function draw() {
         case STATES.READY:
             title();
             break;
+        case STATES.GAMEOVER:
+            gameover();
+            break;
         default:
             console.log("ERROR: state variable not set correctly.");
             break;
@@ -124,6 +128,8 @@ function running(){
         officeMusic.loop();
     }
 
+
+    let faceFound = true;
     // Perform logic if we can detect a face
     if(facePredictions.length > 0){
         // Find the center of the face
@@ -178,6 +184,19 @@ function running(){
         drawRow(0,faceCenter,600,200,320,150,0.2,0.2);
         pop();
     }
+    else{
+        // If there are no predictions, notify the user something is wrong
+        push();
+        fill(255);
+        textSize(50);
+        text("Wake up! Get back to work!",CANVAS_WIDTH/2 - 300,CANVAS_HEIGHT/2);
+        fill(200);
+        textSize(30);
+        text("Camera could not detect face",CANVAS_WIDTH/2 - 200,CANVAS_HEIGHT/2+50);
+        pop();
+
+        faceFound = false;
+    }
 
     // Calculate profit
     if(profitTimer.count == profitTimer.limit){
@@ -190,13 +209,21 @@ function running(){
         });
         profit += numWorking * PROFIT_GAIN_PER_WORK;
         profit -= PROFIT_LOSS;
+        // Make sure the playe is penalized for slacking off (face not in camera)
+        if(!faceFound){
+            profit = -10;
+        }
         // Log the profit
         for(let i = 0; i < graphValues.length-1; i++){
             graphValues[i] = graphValues[i+1];
         }
         money += profit;
         graphValues[graphValues.length-1] = money;
-        console.log(graphValues.length);
+
+        // Check for game over
+        if(money <= 0){
+            state = STATES.GAMEOVER;
+        }
     }
 
     // Draw a graph
@@ -295,11 +322,11 @@ function drawGraph(){
     // Draw graph lines
     let points = [graphValues.length];
     for(let i = 0; i < graphValues.length-1; i++){
-        points[i] = GRAPH.Y+GRAPH_SIZE-graphValues[i]/3;
-        if(points[i] < GRAPH.Y){
+        points[i] = GRAPH.Y+GRAPH_SIZE-graphValues[i]/5;
+        if(points[i] < GRAPH.Y+PADDING){
             points[i] = GRAPH.Y+PADDING;
         }
-        if(points[i] > GRAPH.Y+GRAPH_SIZE){
+        if(points[i] > GRAPH.Y+GRAPH_SIZE-PADDING){
             points[i] = GRAPH.Y+GRAPH_SIZE-PADDING;
         }
     }
@@ -313,7 +340,7 @@ function drawGraph(){
     }
     // Draw current money value
     textSize(20);
-    text("Money:"+graphValues[graphValues.length-1]+"$ | Gain/Loss:"+GAIN_LOSS+"$",GRAPH.X,GRAPH.Y+GRAPH_SIZE+PADDING);
+    text("Money:"+graphValues[graphValues.length-1]+"$ | Gain/Loss:"+GAIN_LOSS+"$",GRAPH.X-PADDING,GRAPH.Y+GRAPH_SIZE+PADDING);
     pop();
 }
 
@@ -327,6 +354,22 @@ function loading(){
     fill(200);
     textSize(30);
     text("*start with your face in the center of your camera to ease calibration*",CANVAS_WIDTH/2 - 450, CANVAS_HEIGHT/2 + 100)
+    pop();
+}
+
+function gameover(){
+    background(255);
+
+    // If the ambiance is playing, stop it
+    if(officeMusic.isPlaying()){
+        officeMusic.stop();
+    }
+
+    // Draw the game over text
+    push();
+    fill(225,0,0);
+    textSize(50);
+    text("MASS LAYOFF\nYOU ARE FIRED\nGAME OVER",CANVAS_WIDTH/2 - 200,CANVAS_HEIGHT/2);
     pop();
 }
 
@@ -349,7 +392,7 @@ function title(){
     stroke(10);
     fill(255);
     textSize(50);
-    text("The Crunch",CANVAS_WIDTH/2 - 150,CANVAS_HEIGHT/2);
+    text("The Crunch",CANVAS_WIDTH/2 - 200,CANVAS_HEIGHT/2);
     textSize(40);
     text("press enter to continue",CANVAS_WIDTH/2 - 100,CANVAS_HEIGHT/2 + 30);
     pop();

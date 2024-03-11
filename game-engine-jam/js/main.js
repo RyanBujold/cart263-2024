@@ -12,6 +12,7 @@ let config = {
     physics: {
         default: `arcade`
     },
+    pixelArt: true,
     scene: [Boot,Play]
 };
 

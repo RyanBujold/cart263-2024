@@ -6,11 +6,11 @@ class Boot extends Phaser.Scene {
     }
     
     preload() {
-        this.load.image(`clown`,`assets/images/clown.png`);
-
         // Load tilemap files
         this.load.tilemapCSV('map', 'assets/tilemap.csv');
         this.load.image('tiles', 'assets/images/tilemap.png');
+        // Load character spritesheets
+        this.load.spritesheet(`adventurer`,`assets/images/adventurer.png`, { frameWidth: 16, frameHeight: 16 });
     }
 
     create() {

@@ -1,5 +1,8 @@
 /**
+ * A phaser 3 game
  * 
+ * Sources:
+ * - https://github.com/phaserjs/examples/blob/master/public/src/tilemap/collision/csv%20map%20arcade%20physics.js
  */
 
 "use strict";

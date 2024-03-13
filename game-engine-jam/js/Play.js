@@ -19,10 +19,40 @@ class Play extends Phaser.Scene {
         this.cameras.main.setZoom(3);
 
         // Initialize the player
-        this.clown = this.physics.add.sprite(32,32,`clown`);
-        this.clown.setDisplaySize(16,16);
-        this.physics.add.collider(this.clown, layer);
+        this.anims.create({
+            key: 'left',
+            frames: this.anims.generateFrameNumbers('adventurer', { start: 4, end: 3 }),
+            frameRate: 10,
+            repeat: -1
+        });
+        this.anims.create({
+            key: 'right',
+            frames: this.anims.generateFrameNumbers('adventurer', { start: 1, end: 2 }),
+            frameRate: 10,
+            repeat: -1
+        });
+        this.anims.create({
+            key: 'up',
+            frames: this.anims.generateFrameNumbers('adventurer', { start: 7, end: 8 }),
+            frameRate: 10,
+            repeat: -1
+        });
+        this.anims.create({
+            key: 'down',
+            frames: this.anims.generateFrameNumbers('adventurer', { start: 5, end: 6 }),
+            frameRate: 10,
+            repeat: -1
+        });
+        this.anims.create({
+            key: 'idle',
+            frames: this.anims.generateFrameNumbers('adventurer', { start: 0, end: 0 }),
+            frameRate: 10,
+            repeat: -1
+        });
+        this.adventurer = this.physics.add.sprite(32,32,`adventurer`,0);
+        this.physics.add.collider(this.adventurer, layer);
 
+        // Setup keyboard input
         this.keyboardArrows = this.input.keyboard.createCursorKeys();
     }
 
@@ -31,22 +61,28 @@ class Play extends Phaser.Scene {
     }
 
     handleInput() {
-        let moveSpeed = 50;
+        const moveSpeed = 50;
+        const keys = this.keyboardArrows;
 
-        if(this.keyboardArrows.right.isDown){
-            this.clown.setVelocity(moveSpeed,0);
+        if(keys.right.isDown && !keys.left.isDown && !keys.up.isDown && !keys.down.isDown){
+            this.adventurer.setVelocity(moveSpeed,0);
+            this.adventurer.anims.play('right', true);
         }
-        else if(this.keyboardArrows.left.isDown){
-            this.clown.setVelocity(-moveSpeed,0);
+        else if(keys.left.isDown && !keys.right.isDown && !keys.up.isDown && !keys.down.isDown){
+            this.adventurer.setVelocity(-moveSpeed,0);
+            this.adventurer.anims.play('left', true);
         }
-        else if(this.keyboardArrows.up.isDown){
-            this.clown.setVelocity(0,-moveSpeed);
+        if(keys.up.isDown && !keys.down.isDown && !keys.right.isDown && !keys.left.isDown){
+            this.adventurer.setVelocity(0,-moveSpeed);
+            this.adventurer.anims.play('up', true);
         }
-        else if(this.keyboardArrows.down.isDown){
-            this.clown.setVelocity(0,moveSpeed);
+        else if(keys.down.isDown && !keys.up.isDown && !keys.right.isDown && !keys.left.isDown){
+            this.adventurer.setVelocity(0,moveSpeed);
+            this.adventurer.anims.play('down', true);
         }
-        else{
-            this.clown.setVelocity(0);
+        if(!keys.right.isDown && !keys.left.isDown && !keys.up.isDown && !keys.down.isDown){
+            this.adventurer.setVelocity(0);
+            this.adventurer.anims.play('idle', true);
         }
     }
 }

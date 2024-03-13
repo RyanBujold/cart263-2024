@@ -11,6 +11,9 @@ class Boot extends Phaser.Scene {
         this.load.image('tiles', 'assets/images/tilemap.png');
         // Load character spritesheets
         this.load.spritesheet(`adventurer`,`assets/images/adventurer.png`, { frameWidth: 16, frameHeight: 16 });
+        this.load.spritesheet(`dinosaur`,`assets/images/dinosaur.png`, { frameWidth: 16, frameHeight: 16 });
+        // Load images
+        this.load.image('meat','assets/images/meat.png');
     }
 
     create() {

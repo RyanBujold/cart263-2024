@@ -3,6 +3,7 @@
  * 
  * Sources:
  * - https://github.com/phaserjs/examples/blob/master/public/src/tilemap/collision/csv%20map%20arcade%20physics.js
+ * - https://github.com/phaserjs/examples/blob/master/public/src/time/looped%20event.js
  */
 
 "use strict";

@@ -37,12 +37,12 @@ class Adventurer extends Phaser.GameObjects.Sprite{
             repeat: -1
         });
 
-        // Save the scene
+        // Variables
         this.scene = scene;
     }
 
     update(){
-        this.handleInput;
+        this.handleInput();
     }
 
     handleInput() {

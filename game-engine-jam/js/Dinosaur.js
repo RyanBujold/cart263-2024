@@ -17,13 +17,52 @@ class Dinosaur extends Phaser.GameObjects.Sprite{
             frameRate: 10,
             repeat: -1
         });
+
+        // Variables
+        this.scene = scene;
+        this.movespeed = 10;
+        this.range = 60;
+        this.target = {};
     }
 
-    changeDinoDirection(){
-        // Randomize dinosaur movement
-        let x = Phaser.Math.Between(-10, 10);
-        let y = Phaser.Math.Between(-10, 10);
-        this.body.setVelocity(x,y);
+    update(){
+        // Check if a target is nearby
+        if(this.scene.adventurer.x < this.body.x + this.range && this.scene.adventurer.x > this.body.x - this.range &&
+            this.scene.adventurer.y < this.body.y + this.range && this.scene.adventurer.y > this.body.y - this.range){
+            // Chase the nearby target
+            this.target = {
+                x: this.scene.adventurer.x - 8, 
+                y: this.scene.adventurer.y - 8
+            }
+            this.chaseTarget();
+        }
+        else{
+            this.body.setVelocity(0,0);
+            this.anims.play('idle',true);
+        }
+        
+    }
+
+    chaseTarget(){
+        // Move towards the target
+        let velX = 0;
+        let velY = 0;
+        if(this.body.x < this.target.x){
+            velX = this.movespeed;
+        }
+        else if(this.body.x > this.target.x){
+            velX = -this.movespeed;
+        }
+        if(this.body.y < this.target.y){
+            velY = this.movespeed;
+        }
+        else if(this.body.y > this.target.y){
+            velY = -this.movespeed;
+        }
+
+        this.body.setVelocity(velX,velY);
         this.anims.play('moving',true);
     }
+
+    
 }

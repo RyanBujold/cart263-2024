@@ -23,24 +23,19 @@ class Play extends Phaser.Scene {
         this.physics.add.collider(this.adventurer, layer);
 
         // Initialize the dinosaur
-        this.dinosaur = new Dinosaur(this,100,32);
+        this.dinosaur = new Dinosaur(this,210,32);
         this.physics.add.collider(this.dinosaur, layer);
-        this.dinoTimeEvent = this.time.addEvent({
-            delay: 1000, // ms
-            callback: this.dinosaur.changeDinoDirection,
-            callbackScope: this.dinosaur,
-            loop: true
-        });
 
         // Initialize the meat
-        this.meat = this.physics.add.sprite(150,32,`meat`);
+        //this.meat = this.physics.add.sprite(150,100,`meat`);
 
         // Setup keyboard input
         this.keyboardArrows = this.input.keyboard.createCursorKeys();
     }
 
     update(){
-        // Handle keyboard input
+        // Update entities
         this.adventurer.update();
+        this.dinosaur.update();
     }
 }

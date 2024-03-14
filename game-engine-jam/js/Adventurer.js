@@ -49,25 +49,30 @@ class Adventurer extends Phaser.GameObjects.Sprite{
         const moveSpeed = 50;
         const keys = this.scene.keyboardArrows;
 
-        if(keys.right.isDown && !keys.left.isDown && !keys.up.isDown && !keys.down.isDown){
-            this.body.setVelocity(moveSpeed,0);
+        let velX = 0;
+        if(keys.right.isDown && !keys.left.isDown){
+            velX = moveSpeed;
             this.anims.play('right', true);
         }
-        else if(keys.left.isDown && !keys.right.isDown && !keys.up.isDown && !keys.down.isDown){
-            this.body.setVelocity(-moveSpeed,0);
+        else if(keys.left.isDown && !keys.right.isDown){
+            velX = -moveSpeed;
             this.anims.play('left', true);
         }
-        if(keys.up.isDown && !keys.down.isDown && !keys.right.isDown && !keys.left.isDown){
-            this.body.setVelocity(0,-moveSpeed);
+        let velY = 0;
+        if(keys.up.isDown && !keys.down.isDown){
+            velY = -moveSpeed;
             this.anims.play('up', true);
         }
-        else if(keys.down.isDown && !keys.up.isDown && !keys.right.isDown && !keys.left.isDown){
-            this.body.setVelocity(0,moveSpeed);
+        else if(keys.down.isDown && !keys.up.isDown){
+            velY = moveSpeed;
             this.anims.play('down', true);
         }
         if(!keys.right.isDown && !keys.left.isDown && !keys.up.isDown && !keys.down.isDown){
             this.body.setVelocity(0);
             this.anims.play('idle', true);
         }
+
+        this.body.setVelocity(velX,velY);
+
     }
 }

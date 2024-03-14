@@ -53,11 +53,12 @@ class Play extends Phaser.Scene {
         this.physics.add.collider(this.adventurer, layer);
 
         // Initialize the dinosaur
-        this.dinosaur = this.physics.add.sprite(100,32,`dinosaur`,0);
+        const dinosaur = new Dinosaur(this,100,32);
+        // this.dinosaur = this.physics.add.sprite(100,32,`dinosaur`,0);
         this.dinoTimeEvent = this.time.addEvent({
             delay: 1000, // ms
-            callback: this.changeDinoDirection,
-            callbackScope: this,
+            callback: dinosaur.changeDinoDirection,
+            callbackScope: dinosaur,
             loop: true
         });
 
@@ -68,12 +69,12 @@ class Play extends Phaser.Scene {
         this.keyboardArrows = this.input.keyboard.createCursorKeys();
     }
 
-    changeDinoDirection(){
-        // Randomize dinosaur movement
-        let x = Phaser.Math.Between(-10, 10);
-        let y = Phaser.Math.Between(-10, 10);
-        this.dinosaur.setVelocity(x,y);
-    }
+    // changeDinoDirection(){
+    //     // Randomize dinosaur movement
+    //     let x = Phaser.Math.Between(-10, 10);
+    //     let y = Phaser.Math.Between(-10, 10);
+    //     this.dinosaur.setVelocity(x,y);
+    // }
 
     update(){
         // Handle keyboard input

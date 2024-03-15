@@ -20,7 +20,7 @@ class Dinosaur extends Phaser.GameObjects.Sprite{
 
         // Variables
         this.scene = scene;
-        this.movespeed = 10;
+        this.movespeed = 20;
         this.range = 60;
         this.target = {};
     }

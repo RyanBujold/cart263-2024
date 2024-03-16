@@ -36,7 +36,7 @@ class Play extends Phaser.Scene {
 
         // Initialize the fruits
         this.time.addEvent({
-            delay: 2000, // ms
+            delay: 3000, // ms
             callback: this.generateNewFruit,
             callbackScope: this,
             loop: true
@@ -44,6 +44,10 @@ class Play extends Phaser.Scene {
 
         // Setup keyboard input
         this.keyboardArrows = this.input.keyboard.createCursorKeys();
+
+        // Setup the score tracking variabes
+        this.score = 0;
+        this.scoreText = this.add.text(20, 200, "SCORE: "+this.score, { font: '"Press Start 2P"' });
     }
 
     generateNewPig(){
@@ -82,10 +86,18 @@ class Play extends Phaser.Scene {
         let y = (16 * Phaser.Math.Between(1, 12)) - 8;
         let fruit = this.physics.add.sprite(x,y,`fruit`);
         this.physics.add.collider(fruit, this.adventurer, this.collectFruit, null, fruit);
+        fruit.on('destroy', this.updateScore, this);
     }
 
     collectFruit(){
+        // Destroy the fruit
         this.destroy();
+    }
+
+    updateScore(){
+        // Update after fruit is collected
+        this.score+=10;
+        this.scoreText.setText("SCORE: "+this.score);
     }
 
     update(){

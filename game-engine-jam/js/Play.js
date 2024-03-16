@@ -36,16 +36,17 @@ class Play extends Phaser.Scene {
             loop: true
         });
 
-        // Initialize the dinosaur
-        this.dinosaur = new Dinosaur(this,210,32);
-        this.physics.add.collider(this.dinosaur, this.layer);
-        this.physics.add.collider(this.dinosaur, this.pigGroup, this.onDinosaurCollidePig, null, this);
-
         // Initialize the adventurer
         this.adventurer = new Adventurer(this,32,32);
         this.physics.add.collider(this.adventurer, this.layer);
         this.physics.add.collider(this.adventurer, this.pigGroup, this.onAdventurerCollidePig, null, this);
         this.physics.add.collider(this.adventurer, this.fruitGroup, this.onAdventurerCollideFruit, null, this);
+
+        // Initialize the dinosaur
+        this.dinosaur = new Dinosaur(this,210,32);
+        this.physics.add.collider(this.dinosaur, this.layer);
+        this.physics.add.collider(this.dinosaur, this.pigGroup, this.onDinosaurCollidePig, null, this);
+        this.physics.add.collider(this.dinosaur, this.adventurer, this.onDinosaurCollideAdventurer, null, this);
 
         // Setup keyboard input
         this.keyboardArrows = this.input.keyboard.createCursorKeys();
@@ -116,6 +117,12 @@ class Play extends Phaser.Scene {
     onDinosaurCollidePig(dinosaur,pig){
         // if the dinosaur collides with a pig, kill the pig
         pig.defeat();
+    }
+
+    onDinosaurCollideAdventurer(dinosaur,adventurer){
+        console.log("hitings")
+        // trigger a game over
+        this.scene.start('gameover');
     }
 
     onAdventurerCollideFruit(adventurer,fruit){

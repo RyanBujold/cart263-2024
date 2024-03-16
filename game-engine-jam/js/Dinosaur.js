@@ -27,9 +27,17 @@ class Dinosaur extends Phaser.GameObjects.Sprite{
 
     update(){
         // Check if a target is nearby
-        if(this.scene.adventurer.x < this.body.x + this.range && this.scene.adventurer.x > this.body.x - this.range &&
+        if(this.scene.adventurer.meat != null){
+            // Chase the meat
+            this.target = {
+                x: this.scene.adventurer.meat.x - 8,
+                y: this.scene.adventurer.meat.y - 8
+            }
+            this.chaseTarget();
+        }
+        else if(this.scene.adventurer.x < this.body.x + this.range && this.scene.adventurer.x > this.body.x - this.range &&
             this.scene.adventurer.y < this.body.y + this.range && this.scene.adventurer.y > this.body.y - this.range){
-            // Chase the nearby target
+            // Chase the adventurer
             this.target = {
                 x: this.scene.adventurer.x - 8, 
                 y: this.scene.adventurer.y - 8

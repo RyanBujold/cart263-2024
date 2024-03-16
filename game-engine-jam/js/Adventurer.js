@@ -39,16 +39,47 @@ class Adventurer extends Phaser.GameObjects.Sprite{
 
         // Variables
         this.scene = scene;
+        this.meat = null;
     }
 
     update(){
         this.handleInput();
     }
 
+    placeMeat(){
+        // If no meat exists create one
+        if(this.meat == null){
+            this.createMeat();
+        }
+        // If there is already a meat, remove it and replace
+        else{
+            this.removeMeat();
+            this.createMeat();
+        }
+    }
+
+    createMeat(){
+        // Create a meat where the player is standing
+        this.meat = this.scene.physics.add.sprite(this.x,this.y,`meat`);
+        this.scene.physics.add.collider(this.meat, this.scene.dinosaur, this.removeMeat, null, this);
+    }
+
+    removeMeat(){
+        // Remove the current meat
+        this.meat.destroy();
+        this.meat = null;
+    }
+
     handleInput() {
         const moveSpeed = 50;
         const keys = this.scene.keyboardArrows;
 
+        // Place a meat using space
+        if(keys.space.isDown){
+            this.placeMeat();
+        }
+
+        // Move with the arrow keys
         let velX = 0;
         if(keys.right.isDown && !keys.left.isDown){
             velX = moveSpeed;

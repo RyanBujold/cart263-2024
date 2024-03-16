@@ -21,7 +21,7 @@ let config = {
         default: `arcade`
     },
     pixelArt: true,
-    scene: [Boot,Play]
+    scene: [Boot,Play,GameOver]
 };
 
 let game = new Phaser.Game(config);

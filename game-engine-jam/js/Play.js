@@ -18,15 +18,8 @@ class Play extends Phaser.Scene {
         this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
         this.cameras.main.setZoom(3);
 
-        // Initialize the adventurer
-        this.adventurer = new Adventurer(this,32,32);
-        this.physics.add.collider(this.adventurer, this.layer);
-
-        // Initialize the dinosaur
-        this.dinosaur = new Dinosaur(this,210,32);
-        this.physics.add.collider(this.dinosaur, this.layer);
-
         // Initialize the pigs
+        this.pigGroup = this.add.group();
         this.time.addEvent({
             delay: 5000, // ms
             callback: this.generateNewPig,
@@ -35,6 +28,7 @@ class Play extends Phaser.Scene {
         });
 
         // Initialize the fruits
+        this.fruitGroup = this.add.group();
         this.time.addEvent({
             delay: 3000, // ms
             callback: this.generateNewFruit,
@@ -42,12 +36,23 @@ class Play extends Phaser.Scene {
             loop: true
         });
 
+        // Initialize the dinosaur
+        this.dinosaur = new Dinosaur(this,210,32);
+        this.physics.add.collider(this.dinosaur, this.layer);
+        this.physics.add.collider(this.dinosaur, this.pigGroup, this.onDinosaurCollidePig, null, this);
+
+        // Initialize the adventurer
+        this.adventurer = new Adventurer(this,32,32);
+        this.physics.add.collider(this.adventurer, this.layer);
+        this.physics.add.collider(this.adventurer, this.pigGroup, this.onAdventurerCollidePig, null, this);
+        this.physics.add.collider(this.adventurer, this.fruitGroup, this.onAdventurerCollideFruit, null, this);
+
         // Setup keyboard input
         this.keyboardArrows = this.input.keyboard.createCursorKeys();
 
         // Setup the score tracking variabes
         this.score = 0;
-        this.scoreText = this.add.text(20, 200, "SCORE: "+this.score, { font: '"Press Start 2P"' });
+        this.scoreText = this.add.text(18, 198, "SCORE: "+this.score, { font: '"Press Start 2P"' });
     }
 
     generateNewPig(){
@@ -70,39 +75,61 @@ class Play extends Phaser.Scene {
         let pig = new Pig(this,x,y);
         this.physics.add.collider(pig, this.layer);
         // Add a timer to change the pigs direction
-        this.time.addEvent({
+        pig.timer = this.time.addEvent({
             delay: 1000, // ms
             callback: pig.changeDirection,
             callbackScope: pig,
             loop: true
         });
-        // A a collision event with the dinosaur
-        this.physics.add.collider(pig, this.dinosaur, pig.defeat, null, pig);
+        // Add the pig to the group
+        this.pigGroup.add(pig);
     }
 
     generateNewFruit(){
-        // Create a new fruit
+        // Randomize position on the tilemap
         let x = (16 * Phaser.Math.Between(1, 15)) - 8;
         let y = (16 * Phaser.Math.Between(1, 12)) - 8;
+        // Create a new fruit
         let fruit = this.physics.add.sprite(x,y,`fruit`);
-        this.physics.add.collider(fruit, this.adventurer, this.collectFruit, null, fruit);
-        fruit.on('destroy', this.updateScore, this);
+        // Add the fruit to the group
+        this.fruitGroup.add(fruit);
     }
 
-    collectFruit(){
-        // Destroy the fruit
-        this.destroy();
+    onAdventurerCollidePig(adventurer,pig){
+        // If the pig is alive, game over
+        if(pig.isAlive){
+            this.scene.start('gameover');
+        }
+        // If the pig is dead, collect it
+        else{
+            // update the score
+            this.score+=100;
+            this.scoreText.setText("SCORE: "+this.score);
+            // delete the pig and its time event
+            this.pigGroup.remove(pig);
+            pig.timer.destroy();
+            pig.destroy();
+        }
+
     }
 
-    updateScore(){
-        // Update after fruit is collected
-        this.score+=10;
+    onDinosaurCollidePig(dinosaur,pig){
+        // if the dinosaur collides with a pig, kill the pig
+        pig.defeat();
+    }
+
+    onAdventurerCollideFruit(adventurer,fruit){
+        // Update the score
+        this.score+=25;
         this.scoreText.setText("SCORE: "+this.score);
+        // delete the fruit
+        this.fruitGroup.remove(fruit);
+        fruit.destroy();
     }
 
     update(){
         // Update entities
-        this.adventurer.update();
+        this.adventurer.update(this);
         this.dinosaur.update();
     }
 }

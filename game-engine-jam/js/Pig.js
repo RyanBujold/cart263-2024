@@ -31,7 +31,12 @@ class Pig extends Phaser.GameObjects.Sprite{
         this.isAlive = false;
         this.body.setVelocity(0,0);
         this.anims.play('dead',true);
-        this.body.enable = false;
+    }
+
+    collect(){
+        if(!this.isAlive){
+           this.destroy();
+        }
     }
 
     changeDirection(){

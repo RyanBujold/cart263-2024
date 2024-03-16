@@ -1,7 +1,11 @@
 /**
- * A phaser 3 game
+ * Title: Beast Hunter
+ * Author: Ryan Bujold
+ * 
+ * Desc: A phaser 3 game where you play as an adventurer trying to collect food while avoiding the dinosaur and pigs. 
  * 
  * Sources:
+ * - sprites by me
  * - tilemap https://github.com/phaserjs/examples/blob/master/public/src/tilemap/collision/csv%20map%20arcade%20physics.js
  * - timer https://github.com/phaserjs/examples/blob/master/public/src/time/looped%20event.js
  * - gameobject class https://blog.ourcade.co/posts/2020/organize-phaser-3-code-game-object-factory-methods/

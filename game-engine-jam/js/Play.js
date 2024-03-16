@@ -99,7 +99,7 @@ class Play extends Phaser.Scene {
     onAdventurerCollidePig(adventurer,pig){
         // If the pig is alive, game over
         if(pig.isAlive){
-            this.scene.start('gameover');
+            this.scene.start('gameover',{ score: this.score });
         }
         // If the pig is dead, collect it
         else{
@@ -122,7 +122,7 @@ class Play extends Phaser.Scene {
     onDinosaurCollideAdventurer(dinosaur,adventurer){
         console.log("hitings")
         // trigger a game over
-        this.scene.start('gameover');
+        this.scene.start('gameover',{ score: this.score });
     }
 
     onAdventurerCollideFruit(adventurer,fruit){

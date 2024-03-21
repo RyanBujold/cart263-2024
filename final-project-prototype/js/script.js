@@ -18,17 +18,14 @@ const STATES = {
 
 // Globals
 let state = STATES.LOADING;
-let facePredictions = [];
+let predictions = [];
 let video;
-let facemesh;
+let handpose;
 
 /**
  * Load the files
 */
 function preload() {
-    // Load sounds
-
-    // Load images
     
 }
 
@@ -39,16 +36,15 @@ function preload() {
 function setup() {
     createCanvas(CANVAS_WIDTH,CANVAS_HEIGHT);
 
-    // Setup the face tracking
     video = createCapture(VIDEO);
     video.hide();
 
-    // facemesh = ml5.facemesh(video, {}, function() { 
-    //     state = STATES.READY;
-    // });
-    // facemesh.on(`face`, function(results) {
-    //     facePredictions = results;
-    // });
+    handpose = ml5.handpose(video, {}, function() { 
+        state = STATES.RUNNING;
+    });
+    handpose.on(`hand`, function(results) {
+        predictions = results;
+    });
 }
 
 
@@ -71,8 +67,14 @@ function draw() {
 }
 
 function running(){
-    background(0);
-
+    background(50);
+    if(predictions.length > 0){
+        fill(0,0,200);
+        ellipseMode(CENTER);
+        predictions[0].landmarks.forEach(point => {
+            ellipse(point[0],point[1],10);
+        });
+    }
 }
 
 function loading(){

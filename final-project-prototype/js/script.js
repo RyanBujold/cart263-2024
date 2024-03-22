@@ -13,10 +13,12 @@ const STATES = {
     LOADING: "loading",
     RUNNING: "running",
 }
+const LEVEL_1 = new Level1();
 
 // Files
 
 // Globals
+let currentLevel;
 let state = STATES.LOADING;
 let predictions = [];
 let video;
@@ -34,8 +36,9 @@ function preload() {
  * Setup before draw
 */
 function setup() {
-    createCanvas(CANVAS_WIDTH,CANVAS_HEIGHT);
+    createCanvas(windowWidth,windowHeight);
 
+    // Start the handpose tracking
     video = createCapture(VIDEO);
     video.hide();
 
@@ -45,6 +48,9 @@ function setup() {
     handpose.on(`hand`, function(results) {
         predictions = results;
     });
+
+    // Start on the first level
+    currentLevel = LEVEL_1;
 }
 
 
@@ -68,13 +74,8 @@ function draw() {
 
 function running(){
     background(50);
-    if(predictions.length > 0){
-        fill(0,0,200);
-        ellipseMode(CENTER);
-        predictions[0].landmarks.forEach(point => {
-            ellipse(point[0],point[1],10);
-        });
-    }
+
+    currentLevel.draw();
 }
 
 function loading(){

@@ -75,7 +75,7 @@ function draw() {
 function running(){
     background(50);
 
-    currentLevel.draw();
+    currentLevel.update();
 }
 
 function loading(){
@@ -86,4 +86,8 @@ function loading(){
     textSize(50);
     text("loading...",CANVAS_WIDTH/2 - 100,CANVAS_HEIGHT/2);
     pop();
+}
+
+function mouseMoved(){
+    currentLevel.mouseMoved();
 }

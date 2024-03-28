@@ -36,6 +36,7 @@ class Level1 {
         this.goal.draw();
         textSize(20);
         text("* Stack the boxes", CONTAINER.x + 10, CONTAINER.y + 30);
+        text("-PLACE HERE-", this.goal.x + 50, this.goal.y + 50);
         // Display the hand
         if(predictions.length > 0){
             fill(0);

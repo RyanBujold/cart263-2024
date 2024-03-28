@@ -2,11 +2,11 @@ const CONTAINER = new Box(50,50,1200,800,100,100,100,0,200,0);
 
 class Level1 {
     constructor(){
-        this.box1 = new Box(CONTAINER.x + 50,CONTAINER.y + CONTAINER.h - 100, 200, 100, 200, 200, 200, 0, 0, 0);
-        this.box2 = new Box(CONTAINER.x + 300,CONTAINER.y + CONTAINER.h - 100, 200, 100, 200, 200, 200, 0, 0, 0);
-        this.box3 = new Box(CONTAINER.x + 550,CONTAINER.y + CONTAINER.h - 100, 200, 100, 200, 200, 200, 0, 0, 0);
+        this.box1 = new Box(CONTAINER.x + 50,CONTAINER.y + CONTAINER.h - 100, 200, 100, 200, 100, 100, 0, 0, 0);
+        this.box2 = new Box(CONTAINER.x + 300,CONTAINER.y + CONTAINER.h - 100, 200, 100, 100, 200, 100, 0, 0, 0);
+        this.box3 = new Box(CONTAINER.x + 550,CONTAINER.y + CONTAINER.h - 100, 200, 100, 100, 100, 200, 0, 0, 0);
         this.boxes = [this.box1,this.box2,this.box3];
-        this.goal = new Box(CONTAINER.x + CONTAINER.w - 300, CONTAINER.y, 250, CONTAINER.h, 0, 100, 0);
+        this.goal = new Box(CONTAINER.x + CONTAINER.w - 300, CONTAINER.y + 500, 250, CONTAINER.h - 500, 0, 100, 0);
 
         this.crane = {
             baseX: CONTAINER.x + CONTAINER.w/2,
@@ -21,6 +21,7 @@ class Level1 {
         this.crane.collider = new Box(this.crane.x - 25, this.crane.y + 25, this.crane.w/2, this.crane.h/2, 0, 200, 0, 0, 0, 0, false),
         this.textBox = new Box(CONTAINER.x + CONTAINER.w + 20, CONTAINER.y + 50, 420, 300, 200, 200, 0, 0, 0, 0);
         this.pinchRange = 100;
+        this.gravity = 5;
         this.isFingerPinched = false;
     }
 
@@ -59,12 +60,8 @@ class Level1 {
         }
         // Update the boxes
         this.boxes.forEach(box => {
-            // Add gravity to the boxes if we arent' colliding with another box
-            this.boxes.forEach(collider => {
-                if(!box.checkCollision(collider)){
-                    box.y+= 5;
-                }
-            });
+            // Add gravity to the boxes
+            box.y+=this.gravity;
             // If the box is out of bounds, move it back in
             if(box.x < CONTAINER.x){box.x = CONTAINER.x; }
             if(box.x + box.w > CONTAINER.x + CONTAINER.w){box.x = CONTAINER.x + CONTAINER.w - box.w; }
@@ -106,7 +103,11 @@ class Level1 {
             }
         });
         if(win){
-            text("WIN",CONTAINER.x + CONTAINER.w/2, CONTAINER.y + CONTAINER.h/2);
+            fill(200,200,0);
+            strokeWeight(5);
+            rect(CONTAINER.x + CONTAINER.w/2 - 100, CONTAINER.y + CONTAINER.h/2 - 100, 200, 200);
+            textSize(20);
+            text("JOB DONE!",CONTAINER.x + CONTAINER.w/2 - 70, CONTAINER.y + CONTAINER.h/2);
         }
 
         pop();

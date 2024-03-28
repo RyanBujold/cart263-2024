@@ -7,8 +7,6 @@
 "use strict";
 
 // Global Constants
-const CANVAS_WIDTH = 1280;
-const CANVAS_HEIGHT = 800;
 const STATES = {
     LOADING: "loading",
     RUNNING: "running",
@@ -84,7 +82,7 @@ function loading(){
     push();
     fill(255);
     textSize(50);
-    text("loading...",CANVAS_WIDTH/2 - 100,CANVAS_HEIGHT/2);
+    text("loading...",windowWidth/2 - 100,windowHeight/2);
     pop();
 }
 

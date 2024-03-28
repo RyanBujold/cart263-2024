@@ -5,6 +5,8 @@ class Level1 {
         this.box1 = new Box(CONTAINER.x + 50,CONTAINER.y + CONTAINER.h - 100, 200, 100, 200, 200, 200, 0, 0, 0);
         this.box2 = new Box(CONTAINER.x + 300,CONTAINER.y + CONTAINER.h - 100, 200, 100, 200, 200, 200, 0, 0, 0);
         this.box3 = new Box(CONTAINER.x + 550,CONTAINER.y + CONTAINER.h - 100, 200, 100, 200, 200, 200, 0, 0, 0);
+        this.boxes = [this.box1,this.box2,this.box3];
+        this.goal = new Box(CONTAINER.x + CONTAINER.w - 300, CONTAINER.y, 250, CONTAINER.h, 0, 100, 0);
 
         this.crane = {
             baseX: CONTAINER.x + CONTAINER.w/2,
@@ -13,19 +15,13 @@ class Level1 {
             y:CONTAINER.x + CONTAINER.h/2,
             w:100,
             h:50,
-            moveSpeed:10,
             isOpen: true,
             collider: null,
         }
         this.crane.collider = new Box(this.crane.x - 25, this.crane.y + 25, this.crane.w/2, this.crane.h/2, 0, 200, 0, 0, 0, 0, false),
-
         this.textBox = new Box(CONTAINER.x + CONTAINER.w + 20, CONTAINER.y + 50, 420, 300, 200, 200, 0, 0, 0, 0);
-
-        this.isPasscodeEntered = false;
+        this.pinchRange = 100;
         this.isFingerPinched = false;
-
-        this.oldMousePosition = {x:0,y:0}
-
     }
 
     update(){
@@ -36,38 +32,83 @@ class Level1 {
         push();
         // Draw the container
         CONTAINER.draw();
+        this.goal.draw();
         // Display the hand
         if(predictions.length > 0){
-            fill(200,0,0);
+            fill(0);
             ellipseMode(CENTER);
             predictions[0].landmarks.forEach(point => {
                 ellipse(point[0],point[1],10);
             });
             let index = predictions[0].annotations['indexFinger'][3];
             let thumb = predictions[0].annotations['thumb'][3];
-            fill(200,200,0);
-            ellipse(index[0],index[1],20);
-            ellipse(thumb[0],thumb[1],20);
+            fill(200,0,0);
+            ellipse(index[0],index[1],this.pinchRange);
+            fill(0,0,200);
+            ellipse(thumb[0],thumb[1],this.pinchRange);
             this.checkFingerPinch(index[0],index[1],thumb[0],thumb[1]);
         }
-        // Draw the boxes
-        this.box1.draw();
-        this.box2.draw();
-        this.box3.draw();
+        // Check if the fingers are pinched
+        if(this.isFingerPinched){
+            this.boxes.forEach(box => {
+                if(this.crane.collider.checkCollision(box)){
+                    box.x = this.crane.collider.x+this.crane.collider.w/2-box.w/2;
+                    box.y = this.crane.collider.y+this.crane.collider.h/2-box.h/2;
+                }
+            });
+        }
+        // Update the boxes
+        this.boxes.forEach(box => {
+            // Add gravity to the boxes if we arent' colliding with another box
+            this.boxes.forEach(collider => {
+                if(!box.checkCollision(collider)){
+                    box.y+= 5;
+                }
+            });
+            // If the box is out of bounds, move it back in
+            if(box.x < CONTAINER.x){box.x = CONTAINER.x; }
+            if(box.x + box.w > CONTAINER.x + CONTAINER.w){box.x = CONTAINER.x + CONTAINER.w - box.w; }
+            if(box.y < CONTAINER.y){box.y = CONTAINER.y; }
+            if(box.y + box.h > CONTAINER.y + CONTAINER.h){box.y = CONTAINER.y + CONTAINER.h - box.h; }
+            box.draw();
+        });
         // Draw the crane
         stroke(0);
-        this.crane.collider.draw();
+        strokeWeight(4);
         line(this.crane.baseX,this.crane.baseY,this.crane.x,this.crane.y);
-        line(this.crane.x, this.crane.y, this.crane.x - this.crane.w/2, this.crane.y + this.crane.h);
-        line(this.crane.x, this.crane.y, this.crane.x + this.crane.w/2, this.crane.y + this.crane.h);
+        if(this.isFingerPinched){
+            stroke(200,0,0);
+            line(this.crane.x, this.crane.y, this.crane.x - this.crane.w/4, this.crane.y + this.crane.h + 10);
+            stroke(0,0,200);
+            line(this.crane.x, this.crane.y, this.crane.x + this.crane.w/4, this.crane.y + this.crane.h + 10);
+        }
+        else {
+            stroke(200,0,0);
+            line(this.crane.x, this.crane.y, this.crane.x - this.crane.w/2, this.crane.y + this.crane.h);
+            stroke(0,0,200);
+            line(this.crane.x, this.crane.y, this.crane.x + this.crane.w/2, this.crane.y + this.crane.h);
+        }
         // Draw the text input display
         this.textBox.draw();
         stroke(0);
+        strokeWeight(1);
         line(this.textBox.x + 20, this.textBox.y + 200, this.textBox.x + 100, this.textBox.y + 200);
         line(this.textBox.x + 120, this.textBox.y + 200, this.textBox.x + 200, this.textBox.y + 200);
         line(this.textBox.x + 220, this.textBox.y + 200, this.textBox.x + 300, this.textBox.y + 200);
         line(this.textBox.x + 320, this.textBox.y + 200, this.textBox.x + 400, this.textBox.y + 200);
         this.passcodeModule();
+
+        // Check win condition
+        let win = true;
+        this.boxes.forEach(box => {
+            if(!box.checkCollision(this.goal)){
+                win = false;
+            }
+        });
+        if(win){
+            text("WIN",CONTAINER.x + CONTAINER.w/2, CONTAINER.y + CONTAINER.h/2);
+        }
+
         pop();
     }
 
@@ -98,24 +139,28 @@ class Level1 {
         }
 
         // If all the keys are pressed, passcode is complete
-        if(mPressed && oPressed && vPressed && ePressed){
-            this.isPasscodeEntered = true;
+        // Make sure the mouse is within the bounds of the screen
+        if(mPressed && oPressed){
+            this.crane.x = mouseX;
+            if(this.crane.x < CONTAINER.x){this.crane.x = CONTAINER.x; }
+            if(this.crane.x > CONTAINER.x + CONTAINER.w){this.crane.x = CONTAINER.x + CONTAINER.w; }
+            this.crane.collider = new Box(this.crane.x - 25, this.crane.y + 25, this.crane.w/2, this.crane.h/2, 0, 200, 0, 0, 0, 0);
         }
-        else{
-            this.isPasscodeEntered = false;
+        if(vPressed && ePressed){
+            this.crane.y = mouseY;
+            if(this.crane.y < CONTAINER.y){this.crane.y = CONTAINER.y; }
+            if(this.crane.y > CONTAINER.y + CONTAINER.h){this.crane.y = CONTAINER.y + CONTAINER.h; }
+            this.crane.collider = new Box(this.crane.x - 25, this.crane.y + 25, this.crane.w/2, this.crane.h/2, 0, 200, 0, 0, 0, 0);
         }
-
         pop();
     }
 
     checkFingerPinch(x1,y1,x2,y2){
-        // If the index and thumb are within range, trigger a finger pinch
-        const RANGE = 50;
-        let indexBox = new Box(x1-RANGE/2,y1-RANGE/2,RANGE,RANGE);
-        let thumbBox = new Box(x2-RANGE/2,y2-RANGE/2,RANGE,RANGE);
+        // If the index and thumb are within pinchRange, trigger a finger pinch
+        let indexBox = new Box(x1-this.pinchRange/2,y1-this.pinchRange/2,this.pinchRange,this.pinchRange);
+        let thumbBox = new Box(x2-this.pinchRange/2,y2-this.pinchRange/2,this.pinchRange,this.pinchRange);
 
         if(indexBox.checkCollision(thumbBox)){
-            console.log("fingers touched");
             this.isFingerPinched = true;
         }
         else{
@@ -123,23 +168,4 @@ class Level1 {
         }
     }
 
-    mouseMoved(){
-        if(this.isPasscodeEntered){
-            if(mouseX > this.oldMousePosition.x){
-                this.crane.x += 10;
-            }
-            else if(mouseX < this.oldMousePosition.x){
-                this.crane.x -= 10;
-            }
-
-            if(mouseY > this.oldMousePosition.y){
-                this.crane.y += 10;
-            }
-            else if(mouseY < this.oldMousePosition.y){
-                this.crane.y -= 10;
-            }
-            this.crane.collider = new Box(this.crane.x - 25, this.crane.y + 25, this.crane.w/2, this.crane.h/2, 0, 200, 0, 0, 0, 0);
-        }
-        this.oldMousePosition = {x:mouseX, y:mouseY}
-    }
 }
